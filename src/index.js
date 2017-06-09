@@ -9,9 +9,8 @@
  * Module Dependencies
  * @ignore
  */
-const RSA = require('./RSA')
-const ECDSA = require('./ECDSA')
-const EDDSA = require('./EDDSA')
+const types = require('./types')
+const asn = require('./asn1')
 
 /**
  * JWK
@@ -47,42 +46,6 @@ const EDDSA = require('./EDDSA')
  *
  * @description
  * Available formats: jwk, hex, base64, base64url
- */
-
-/**
- * KeyDescriptor
- *
- * @typedef {(RSAKeyDescriptor|ECDSAKeyDescriptor|EDDSAKeyDescriptor)} KeyDescriptor
- *
- * @description
- * Key metadata. If the input format is 'pem', this may be omitted.
- */
-
-/**
- * RSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for RSA Keys
- *
- * @typedef {Object} RSAKeyDescriptor
- */
-
-/**
- * ECDSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for ECDSA Keys
- *
- * @typedef {Object} ECDSAKeyDescriptor
- */
-
-/**
- * EDDSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for EDDSA Keys
- *
- * @typedef {Object} EDDSAKeyDescriptor
  */
 
 /**
