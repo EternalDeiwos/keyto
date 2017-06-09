@@ -61,10 +61,8 @@ class Key {
    *
    * @description
    * A high level class for accepting and processing keys
-   *
-   * @param {String} [scum]
    */
-  constructor (scum) {
+  constructor () {
 
   }
 
