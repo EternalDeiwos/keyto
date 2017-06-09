@@ -1,0 +1,39 @@
+{
+  "name": "pem",
+  "version": "0.1.0",
+  "description": "A utility for decoding and encoding OpenSSL asymmetric keys",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha -w",
+    "jsdoc": "./node_modules/.bin/jsdoc -c jsdoc.json -r"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EternalDeiwos/pem.git"
+  },
+  "keywords": [
+    "PEM",
+    "JWK",
+    "Webcrypto",
+    "JOSE"
+  ],
+  "authors": [
+    "Greg Linklater",
+    "JC Bailey"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EternalDeiwos/pem/issues"
+  },
+  "homepage": "https://github.com/EternalDeiwos/pem#readme",
+  "devDependencies": {
+    "chai": "< 4.0.0",
+    "chai-as-promised": "^6.0.0",
+    "glob": "^7.1.2",
+    "jsdoc": "^3.4.3",
+    "mocha": "^3.4.2"
+  },
+  "dependencies": {
+    "base64url": "^2.0.0"
+  }
+}
