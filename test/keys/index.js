@@ -31,7 +31,7 @@ const getKeys = (dir) => {
  * Export
  * @ignore
  */
-module.export = glob.sync(`${__dirname}/**/`)
+module.exports = glob.sync(`${__dirname}/**/`)
   .filter(dir => dir !== `${__dirname}/`)
   .reduce((state, dir) => {
     let name = path.basename(dir)
