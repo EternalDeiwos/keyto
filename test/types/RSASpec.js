@@ -33,5 +33,3 @@ const { RSA: { RS256 } } = require(path.join(cwd, 'test', 'keys'))
 describe('RSA Key Type', () => {
 
 })
-
-
