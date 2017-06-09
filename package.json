@@ -34,6 +34,7 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
+    "asn1.js": "^4.9.1",
     "base64url": "^2.0.0"
   }
 }
