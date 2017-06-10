@@ -76,12 +76,11 @@ class RSA extends KeyType {
   }
 
   toPem () {
-    let base64pem
     if (this.private) {
-      base64pem = this.toPrivatePemB64()
+      let base64pem = this.toPrivatePemB64()
       return RSA.formatPem(base64pem, 'RSA PRIVATE')
     } else {
-      base64pem = this.toPublicPemB64()
+      let base64pem = this.toPublicPemB64()
       return RSA.formatPem(base64pem, 'PUBLIC')
     }
   }
