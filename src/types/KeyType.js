@@ -20,8 +20,11 @@ class KeyType {
    * @description
    * Abstract KeyType class
    */
-  constructor (data) {
+  constructor (data, options={}) {
     Object.assign(this, data)
+    Object.keys(options).map(key => {
+      Object.defineProperty(this, key, { value: options[key] })
+    })
   }
 
   static formatPem (base64pem, descriptor) {
@@ -78,7 +81,11 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
-  toJwk () {
+  toPrivateJwk () {
+    throw new OperationNotSupportedError()
+  }
+
+  toPublicJwk () {
     throw new OperationNotSupportedError()
   }
 }
