@@ -54,10 +54,10 @@ class Converter {
       buffer = Buffer.from(data, 'base64')
 
     } else if (fromType === 'base64url') {
-      buffer = Buffer.from(base64url.decode(data), 'base64')
+      buffer = base64url.toBuffer(data)
 
     } else if (fromType === 'bn' || fromType === 'bignum') {
-      buffer = Buffer.from(this.pad(bn.toString(16)), 'hex')
+      buffer = Buffer.from(this.pad(data.toString(16)), 'hex')
 
     } else {
       throw new Error('Invalid fromType')
@@ -76,14 +76,34 @@ class Converter {
       return buffer.toString('base64')
 
     } else if (toType === 'base64url') {
-      return base64url(buffer.toString('base64'))
+      return base64url.fromBase64(buffer.toString('base64'))
 
     } else if (toType === 'bn' || toType === 'bignum') {
-      return asn.bignum(buffer)
+      return new asn.bignum(buffer)
 
     } else {
       throw new Error('Invalid toType')
     }
+  }
+
+  /**
+   * convertObject
+   *
+   * @description
+   * Execute the same conversion operation over all fields in an object.
+   *
+   * @param  {Object} data
+   * @param  {String} fromType
+   * @param  {String} toType
+   * @return {Object}
+   */
+  static convertObject(data, fromType, toType) {
+    return Object.keys(data).reduce((state, field) => {
+      try {
+        state[field] = Converter.convert(data[field], fromType, toType)
+      } catch (e) { }
+      return state
+    }, {})
   }
 
   /**
