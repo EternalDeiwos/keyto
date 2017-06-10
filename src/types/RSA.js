@@ -15,29 +15,14 @@ const asn = require('../asn1')
 
 /**
  * RSA
- * @ignore
+ * @class RSA
+ *
+ * @extends {KeyType}
+ *
+ * @description
+ * RSA conversion implementation
  */
 class RSA extends KeyType {
-
-  /**
-   * constructor
-   *
-   * @class RSA
-   *
-   * @extends {KeyType}
-   *
-   * @description
-   * RSA conversion implementation
-   */
-  constructor (data) {
-    super(data)
-
-    if (this.d) {
-      Object.defineProperty(this, 'private', { value: true })
-    } else {
-      Object.defineProperty(this, 'private', { value: false })
-    }
-  }
 
   static get oid () {
     return [ 1, 2, 840, 113549, 1, 1, 1 ]
@@ -85,6 +70,10 @@ class RSA extends KeyType {
     let { n, e, d, p, q, dp, dq, qi } = jwk
     let data = Converter.convertObject({ n, e, d, p, q, dp, dq, qi }, 'base64url', 'raw')
     return new RSA(data)
+  }
+
+  get isPrivate () {
+    return !!this.d
   }
 
   toPKCS8 () {
