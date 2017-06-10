@@ -33,8 +33,7 @@ supportedAsnTypes.define('RSAPublicKey', require('./RSAPublicKey'))
  * ECDSA Types
  * @ignore
  */
-supportedAsnTypes.define('ECDSAPrivateKey', require('./ECDSAPrivateKey'))
-supportedAsnTypes.define('ECDSAPublicKey', require('./ECDSAPublicKey'))
+supportedAsnTypes.define('ECPrivateKey', require('./ECPrivateKey'))
 
 /**
  * Export
