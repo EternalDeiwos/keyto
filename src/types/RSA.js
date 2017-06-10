@@ -32,6 +32,10 @@ class RSA extends KeyType {
     return Buffer.from('0500', 'hex')
   }
 
+  static get opensslRetrievePublicKeyArgs () {
+    return ['rsa', '-pubout']
+  }
+
   static fromPKCS8 (base64pem) {
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let RSAPrivateKey = asn.normalize('RSAPrivateKey')
