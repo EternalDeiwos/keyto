@@ -36,7 +36,7 @@ const asn = require('./asn1')
  * @typedef {String} BufferFormat
  *
  * @description
- * Available formats: raw
+ * Available formats: raw, uint8_array
  */
 
 /**
@@ -90,8 +90,8 @@ class Key {
    * If format is not 'pem' and type is omitted.
    *
    * @param  {Object} data
-   * @param  {(String|Buffer)} [data.privateKey]
-   * @param  {(String|Buffer)} [data.publicKey]
+   * @param  {(Object|String|Uint8Array|Buffer)} [data.privateKey]
+   * @param  {(Object|String|Uint8Array|Buffer)} [data.publicKey]
    * @param  {KeyDescriptor} [data.type]
    * @param  {(SerializableFormat|BufferFormat)} data.format
    * @return {Key}
