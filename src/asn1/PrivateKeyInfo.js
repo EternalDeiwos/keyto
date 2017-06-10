@@ -8,7 +8,7 @@ module.exports = registry => {
     this.seq().obj(
       this.key('version').use(Version),
       this.key('algorithm').use(AlgorithmIdentifier),
-      this.key('privateKey').bitstr()
+      this.key('privateKey').octstr()
     )
   }
 }
