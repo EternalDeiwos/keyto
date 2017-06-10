@@ -67,9 +67,9 @@ class RSA extends KeyType {
   }
 
   static fromJwk (jwk) {
-    let { n, e, d, p, q, dp, dq, qi } = jwk
+    let { n, e, d, p, q, dp, dq, qi, alg } = jwk
     let data = Converter.convertObject({ n, e, d, p, q, dp, dq, qi }, 'base64url', 'raw')
-    return new RSA(data)
+    return new RSA(data, { alg })
   }
 
   get isPrivate () {
@@ -99,8 +99,8 @@ class RSA extends KeyType {
   toPKCS1 () {
     let RSAPrivateKey = asn.normalize('RSAPrivateKey')
 
-    let data = Converter.convertObject(this, 'raw', 'bn')
-    data.version = 'two-prime'
+    let data = { version: 'two-prime' }
+    Object.assign(data, Converter.convertObject(this, 'raw', 'bn'))
 
     let base64pem = RSAPrivateKey.encode(data, 'der').toString('base64')
 
@@ -129,8 +129,16 @@ class RSA extends KeyType {
     return RSA.formatPem(base64pem, 'PUBLIC')
   }
 
-  toJwk () {
-    let jwk = Object.assign({ kty: 'RSA' }, Converter.convertObject(this, 'raw', 'base64url'))
+  toPrivateJwk () {
+    let { n, e, d, p, q, dp, dq, qi } = this
+    let jwk = Object.assign({ kty: 'RSA' }, Converter.convertObject({ n, e, d, p, q, dp, dq, qi }, 'raw', 'base64url'))
+    delete jwk.version
+    return jwk
+  }
+
+  toPublicJwk () {
+    let { n, e } = this
+    let jwk = Object.assign({ kty: 'RSA' }, Converter.convertObject({ n, e }, 'raw', 'base64url'))
     delete jwk.version
     return jwk
   }
