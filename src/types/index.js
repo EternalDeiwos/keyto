@@ -23,6 +23,7 @@ const supportedKeyTypes = new SupportedKeyTypes()
  * @typedef {Object} RSAKeyDescriptor
  */
 const RSA = require('./RSA')
+supportedKeyTypes.define('RSA', RSA)
 
 /**
  * ECDSAKeyDescriptor
@@ -35,6 +36,7 @@ const RSA = require('./RSA')
  * @typedef {Object} ECDSAKeyDescriptor
  */
 const ECDSA = require('./ECDSA')
+supportedKeyTypes.define('EC', ECDSA)
 
 /**
  * EDDSAKeyDescriptor
@@ -47,6 +49,7 @@ const ECDSA = require('./ECDSA')
  * @typedef {Object} EDDSAKeyDescriptor
  */
 const EDDSA = require('./EDDSA')
+supportedKeyTypes.define('ED', EDDSA)
 
 /**
  * KeyDescriptor
@@ -54,7 +57,7 @@ const EDDSA = require('./EDDSA')
  * @typedef {(RSAKeyDescriptor|ECDSAKeyDescriptor|EDDSAKeyDescriptor)} KeyDescriptor
  *
  * @description
- * Key metadata. If the input format is 'pem', this may be omitted.
+ * Key metadata. If the input format is 'pem' or 'jwk', this may be omitted.
  */
 
 /**
