@@ -1,17 +1,10 @@
 'use strict'
 
 /**
- * Dependencies
- * @ignore
- */
-const spawn = require('child_process').spawnSync
-
-/**
  * Module Dependencies
  * @ignore
  */
 const OperationNotSupportedError = require('../OperationNotSupportedError')
-const InvalidOperationError = require('../InvalidOperationError')
 
 /**
  * KeyType
@@ -37,47 +30,11 @@ class KeyType {
     + `\n-----END ${descriptor} KEY-----`
   }
 
-  get publicKey () {
-    // Can only get public key using the private key
-    if (!this.isPrivate) {
-      return new InvalidOperationError()
-    }
-
-    // Get Private Key in PEM form
-    let privateKey = this.toPKCS8()
-    let args = this.constructor.opensslRetrievePublicKeyArgs
-
-    // Call out to OpenSSL
-    let result
-    try {
-      result = spawn('openssl', args, {
-        encoding: 'utf8',
-        timeout: 1000,
-        input: privateKey,
-        maxBuffer: 10000
-      })
-    } catch (error) {
-      throw new InvalidOperationError('OpenSSL required to retrieve public key')
-    }
-
-    // Get output and check status
-    let { stdout, status, error } = result
-    if (status !== 0) {
-      throw new Error(error)
-    }
-
-    return stdout
-  }
-
   static get oid () {
     throw new OperationNotSupportedError()
   }
 
   static get parameters () {
-    throw new OperationNotSupportedError()
-  }
-
-  static get opensslRetrievePublicKeyArgs () {
     throw new OperationNotSupportedError()
   }
 
