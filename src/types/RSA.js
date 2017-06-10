@@ -47,7 +47,19 @@ class RSA extends KeyType {
     return Buffer.from('0500', 'hex')
   }
 
-  static fromPrivatePem (base64pem) {
+  static fromPKCS8 (base64pem) {
+    let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let buffer = Buffer.from(base64pem, 'base64')
+    let info = PrivateKeyInfo.decode(buffer, 'der')
+    let der = RSAPrivateKey.decode(info.privateKey, 'der')
+    let data = Converter.convertObject(der, 'bn', 'raw')
+
+    return new RSA(data)
+  }
+
+  static fromPKCS1 (base64pem) {
     let RSAPrivateKey = asn.normalize('RSAPrivateKey')
 
     let buffer = Buffer.from(base64pem, 'base64')
@@ -75,23 +87,45 @@ class RSA extends KeyType {
     return new RSA(data)
   }
 
-  toPem () {
-    if (this.private) {
-      let base64pem = this.toPrivatePemB64()
-      return RSA.formatPem(base64pem, 'RSA PRIVATE')
-    } else {
-      let base64pem = this.toPublicPemB64()
-      return RSA.formatPem(base64pem, 'PUBLIC')
-    }
+  toPKCS8 () {
+    Object.defineProperty(this, 'pkcs8', { value: true })
+    let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let converted = Converter.convertObject(this, 'raw', 'bn')
+    let privateKey = RSAPrivateKey.encode(converted, 'der')
+
+    let base64pem = PrivateKeyInfo.encode({
+      version: 'two-prime',
+      algorithm: {
+        algorithm: RSA.oid,
+        parameters: RSA.parameters
+      },
+      privateKey
+    }, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'PRIVATE')
   }
 
-  toPublicPemB64 () {
+  toPKCS1 () {
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let data = Converter.convertObject(this, 'raw', 'bn')
+    data.version = 'two-prime'
+
+    let base64pem = RSAPrivateKey.encode(data, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'RSA PRIVATE')
+  }
+
+  toPublicPem () {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
     let RSAPublicKey = asn.normalize('RSAPublicKey')
 
     let converted = Converter.convertObject(this, 'raw', 'bn')
     let data = RSAPublicKey.encode(converted, 'der')
-    return PublicKeyInfo.encode({
+
+    let base64pem = PublicKeyInfo.encode({
       algorithm: {
         algorithm: RSA.oid,
         parameters: RSA.parameters
@@ -101,13 +135,8 @@ class RSA extends KeyType {
         data
       }
     }, 'der').toString('base64')
-  }
 
-  toPrivatePemB64 () {
-    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
-
-    let data = Converter.convertObject(this, 'raw', 'bn')
-    return RSAPrivateKey.encode(data, 'der').toString('base64')
+    return RSA.formatPem(base64pem, 'PUBLIC')
   }
 
   toJwk () {
