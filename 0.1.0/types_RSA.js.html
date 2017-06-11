@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: types/RSA.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: types/RSA.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+/**
+ * Dependencies
+ * @ignore
+ */
+
+/**
+ * Module Dependencies
+ * @ignore
+ */
+const KeyType = require('./KeyType')
+const InvalidOperationError = require('../InvalidOperationError')
+const Converter = require('../Converter')
+const asn = require('../asn1')
+
+/**
+ * RSA
+ * @class RSA
+ *
+ * @extends {KeyType}
+ *
+ * @description
+ * RSA conversion implementation
+ */
+class RSA extends KeyType {
+
+  static get kty () {
+    return 'RSA'
+  }
+
+  static get oid () {
+    return [ 1, 2, 840, 113549, 1, 1, 1 ]
+  }
+
+  static get parameters () {
+    return Buffer.from('0500', 'hex')
+  }
+
+  static fromPKCS8 (base64pem) {
+    let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let buffer = Buffer.from(base64pem, 'base64')
+    let info = PrivateKeyInfo.decode(buffer, 'der')
+    let der = RSAPrivateKey.decode(info.privateKey, 'der')
+    let data = Converter.convertObject(der, 'bn', 'raw')
+
+    return new RSA(data)
+  }
+
+  static fromPKCS1 (base64pem) {
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let buffer = Buffer.from(base64pem, 'base64')
+    let der = RSAPrivateKey.decode(buffer, 'der')
+    let data = Converter.convertObject(der, 'bn', 'raw')
+
+    return new RSA(data)
+  }
+
+  static fromPublicPem (base64pem) {
+    let PublicKeyInfo = asn.normalize('PublicKeyInfo')
+    let RSAPublicKey = asn.normalize('RSAPublicKey')
+
+    let buffer = Buffer.from(base64pem, 'base64')
+    let info = PublicKeyInfo.decode(buffer, 'der')
+    let der = RSAPublicKey.decode(info.publicKey.data, 'der')
+    let data = Converter.convertObject(der, 'bn', 'raw')
+
+    return new RSA(data)
+  }
+
+  static fromJwk (jwk) {
+    let { n, e, d, p, q, dp, dq, qi, alg } = jwk
+
+    let data = {
+      n: Converter.convert(n, 'base64url', 'raw'),
+      e: Converter.convert(e, 'base64url', 'raw'),
+      d: Converter.convert(d, 'base64url', 'raw'),
+      p: Converter.convert(p, 'base64url', 'raw'),
+      q: Converter.convert(q, 'base64url', 'raw'),
+      dp: Converter.convert(dp, 'base64url', 'raw'),
+      dq: Converter.convert(dq, 'base64url', 'raw'),
+      qi: Converter.convert(qi, 'base64url', 'raw'),
+    }
+
+    return new RSA(data, { alg })
+  }
+
+  get isPrivate () {
+    return !!this.d
+  }
+
+  toPKCS1 () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let data = { version: 'two-prime' }
+    Object.assign(data, Converter.convertObject(this, 'raw', 'bn'))
+
+    let base64pem = RSAPrivateKey.encode(data, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'RSA PRIVATE')
+  }
+
+  toPKCS8 () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
+    Object.defineProperty(this, 'pkcs8', { value: true })
+    let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let data = { version: 'two-prime' }
+    Object.assign(data, Converter.convertObject(this, 'raw', 'bn'))
+    let privateKey = RSAPrivateKey.encode(data, 'der')
+
+    let base64pem = PrivateKeyInfo.encode({
+      version: 'two-prime',
+      algorithm: {
+        algorithm: RSA.oid,
+        parameters: RSA.parameters
+      },
+      privateKey
+    }, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'PRIVATE')
+  }
+
+  toPublicPem () {
+    let PublicKeyInfo = asn.normalize('PublicKeyInfo')
+    let RSAPublicKey = asn.normalize('RSAPublicKey')
+
+    let { n, e } = this
+    let converted = Converter.convertObject({ n, e }, 'raw', 'bn')
+    let data = RSAPublicKey.encode(converted, 'der')
+
+    let base64pem = PublicKeyInfo.encode({
+      algorithm: {
+        algorithm: RSA.oid,
+        parameters: RSA.parameters
+      },
+      publicKey: {
+        unused: 0,
+        data
+      }
+    }, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'PUBLIC')
+  }
+
+  toPrivateJwk () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
+    let { n, e, d, p, q, dp, dq, qi } = this
+
+    return {
+      kty: 'RSA',
+      n: Converter.convert(n, 'raw', 'base64url'),
+      e: Converter.convert(e, 'raw', 'base64url'),
+      d: Converter.convert(d, 'raw', 'base64url'),
+      p: Converter.convert(p, 'raw', 'base64url'),
+      q: Converter.convert(q, 'raw', 'base64url'),
+      dp: Converter.convert(dp, 'raw', 'base64url'),
+      dq: Converter.convert(dq, 'raw', 'base64url'),
+      qi: Converter.convert(qi, 'raw', 'base64url'),
+    }
+  }
+
+  toPublicJwk () {
+    let { n, e } = this
+
+    return {
+      kty: 'RSA',
+      n: Converter.convert(n, 'raw', 'base64url'),
+      e: Converter.convert(e, 'raw', 'base64url'),
+    }
+  }
+}
+
+/**
+ * Export
+ * @ignore
+ */
+module.exports = RSA
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Converter.html">Converter</a></li><li><a href="ECDSA.html">ECDSA</a></li><li><a href="EDDSA.html">EDDSA</a></li><li><a href="InvalidOperationError.html">InvalidOperationError</a></li><li><a href="Key.html">Key</a></li><li><a href="KeyType.html">KeyType</a></li><li><a href="OperationNotSupportedError.html">OperationNotSupportedError</a></li><li><a href="RSA.html">RSA</a></li><li><a href="SupportedAsnTypes.html">SupportedAsnTypes</a></li><li><a href="SupportedKeyTypes.html">SupportedKeyTypes</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jun 12 2017 00:35:09 GMT+0200 (SAST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
