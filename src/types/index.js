@@ -12,53 +12,19 @@ const SupportedKeyTypes = require('./SupportedKeyTypes')
  */
 const supportedKeyTypes = new SupportedKeyTypes()
 
-/**
- * RSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for RSA Keys
- *
- * @see RSA
- *
- * @typedef {Object} RSAKeyDescriptor
- */
+// RSA
 const RSA = require('./RSA')
-supportedKeyTypes.define('RSA', RSA)
+supportedKeyTypes.define(RSA, 'RSA', [ 1, 2, 840, 113549, 1, 1, 1 ], ['RS256'])
 
-/**
- * ECDSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for ECDSA Keys
- *
- * @see ECDSA
- *
- * @typedef {Object} ECDSAKeyDescriptor
- */
+// ECDSA
 const ECDSA = require('./ECDSA')
-supportedKeyTypes.define('EC', ECDSA)
+supportedKeyTypes.define(ECDSA, 'EC', [
+  [ 1, 2, 840, 10045, 2, 1 ]
+], ['K-256'])
 
-/**
- * EDDSAKeyDescriptor
- *
- * @description
- * A KeyDescriptor for EDDSA Keys
- *
- * @see EDDSA
- *
- * @typedef {Object} EDDSAKeyDescriptor
- */
+// EDDSA
 const EDDSA = require('./EDDSA')
-supportedKeyTypes.define('ED', EDDSA)
-
-/**
- * KeyDescriptor
- *
- * @typedef {(RSAKeyDescriptor|ECDSAKeyDescriptor|EDDSAKeyDescriptor)} KeyDescriptor
- *
- * @description
- * Key metadata. If the input format is 'pem' or 'jwk', this may be omitted.
- */
+supportedKeyTypes.define(EDDSA, 'ED')
 
 /**
  * Export
