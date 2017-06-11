@@ -33,6 +33,10 @@ class KeyType {
     + `\n-----END ${descriptor} KEY-----`
   }
 
+  static get kty () {
+    throw new OperationNotSupportedError()
+  }
+
   static get oid () {
     throw new OperationNotSupportedError()
   }
@@ -53,11 +57,19 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
-  static fromHex (hex, type) {
+  static fromHex (hex, options) {
     throw new OperationNotSupportedError()
   }
 
   static fromJwk (jwk) {
+    throw new OperationNotSupportedError()
+  }
+
+  static fromBuffer (buffer, options) {
+    throw new OperationNotSupportedError()
+  }
+
+  static fromArray (array, options) {
     throw new OperationNotSupportedError()
   }
 
@@ -86,6 +98,14 @@ class KeyType {
   }
 
   toPublicJwk () {
+    throw new OperationNotSupportedError()
+  }
+
+  toBuffer () {
+    throw new OperationNotSupportedError()
+  }
+
+  toArray () {
     throw new OperationNotSupportedError()
   }
 }
