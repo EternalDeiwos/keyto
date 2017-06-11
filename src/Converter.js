@@ -35,6 +35,10 @@ class Converter {
    * @return {String|BigNumber}
    */
   static convert(data, fromType, toType) {
+    if (!data) {
+      return undefined
+    }
+
     if (fromType === toType) {
       return data
     }
