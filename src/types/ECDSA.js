@@ -11,6 +11,7 @@ const bignum = require('asn1.js').bignum
  * @ignore
  */
 const KeyType = require('./KeyType')
+const InvalidOperationError = require('../InvalidOperationError')
 const Converter = require('../Converter')
 const asn = require('../asn1')
 
@@ -25,16 +26,16 @@ const asn = require('../asn1')
  */
 class ECDSA extends KeyType {
 
+  static get kty () {
+    return 'EC'
+  }
+
   static get oid () {
     return [ 1, 2, 840, 10045, 2, 1 ]
   }
 
   static get parameters () {
     return Buffer.from('06052b8104000a', 'hex')
-  }
-
-  static get opensslRetrievePublicKeyArgs () {
-    return ['ec', '-pubout']
   }
 
   static fromPKCS1 (base64pem) {
@@ -92,6 +93,10 @@ class ECDSA extends KeyType {
   }
 
   toPKCS1 () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
     let { d, x, y } = this
@@ -113,6 +118,10 @@ class ECDSA extends KeyType {
   }
 
   toPKCS8 () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
@@ -158,6 +167,10 @@ class ECDSA extends KeyType {
   }
 
   toPrivateJwk () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
     let { d, x, y } = this
 
     return {
