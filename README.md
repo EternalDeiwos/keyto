@@ -1,3 +1,6 @@
-# PEM
+# Keyto
 
-A utility for decoding and encoding OpenSSL asymmetric keys
+A utility for translating cryptographic keys between representations.
+
+Keyto is pronounced 'key-to'.
+
