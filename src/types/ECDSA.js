@@ -38,7 +38,7 @@ class ECDSA extends KeyType {
     return Buffer.from('06052b8104000a', 'hex')
   }
 
-  static fromPKCS1 (base64pem) {
+  static fromPrivatePKCS1 (base64pem) {
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
     let buffer = Buffer.from(base64pem, 'base64')
@@ -50,7 +50,7 @@ class ECDSA extends KeyType {
     return new ECDSA({ d, x, y })
   }
 
-  static fromPKCS8 (base64pem) {
+  static fromPrivatePKCS8 (base64pem) {
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
@@ -64,7 +64,7 @@ class ECDSA extends KeyType {
     return new ECDSA({ d, x, y })
   }
 
-  static fromPublicPem (base64pem) {
+  static fromPublicPKCS8 (base64pem) {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
     let buffer = Buffer.from(base64pem, 'base64')
@@ -92,7 +92,7 @@ class ECDSA extends KeyType {
     return !!this.d
   }
 
-  toPKCS1 () {
+  toPrivatePKCS1 () {
     if (!this.isPrivate) {
       throw new InvalidOperationError('Cannot export a private key from a public key')
     }
@@ -117,7 +117,7 @@ class ECDSA extends KeyType {
     return ECDSA.formatPem(base64pem, 'EC PRIVATE')
   }
 
-  toPKCS8 () {
+  toPrivatePKCS8 () {
     if (!this.isPrivate) {
       throw new InvalidOperationError('Cannot export a private key from a public key')
     }
@@ -148,7 +148,7 @@ class ECDSA extends KeyType {
     return ECDSA.formatPem(base64pem, 'PRIVATE')
   }
 
-  toPublicPem () {
+  toPublicPKCS8 () {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
     let data = ECDSA.makePoint(this.x, this.y)
