@@ -26,7 +26,8 @@ const keyto = require(path.join(cwd, 'src'))
 const {
   RSA: {
     RS256: {
-      publicPem: rsaPublicPem,
+      publicPKCS1: rsaPublicPKCS1,
+      publicPKCS8: rsaPublicPKCS8,
       publicJwk: rsaPublicJwk,
       privatePKCS8: rsaPrivatePKCS8,
       privatePKCS1: rsaPrivatePKCS1,
@@ -35,7 +36,8 @@ const {
   },
   ECDSA: {
     K256: {
-      publicPem: ecPublicPem,
+      publicPKCS1: ecPublicPKCS1,
+      publicPKCS8: ecPublicPKCS8,
       publicJwk: ecPublicJwk,
       privatePKCS8: ecPrivatePKCS8,
       privatePKCS1: ecPrivatePKCS1,
@@ -51,15 +53,19 @@ describe('keyto', () => {
 
   describe('RSA', () => {
 
-    describe('publicPem', () => {
+    describe('publicPKCS8', () => {
 
       let key
       before(() => {
-        key = keyto.from(rsaPublicPem, 'pem')
+        key = keyto.from(rsaPublicPKCS8, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(rsaPublicPem)
+      it('should convert to publicPKCS1', () => {
+        key.toString('pem', 'public_pkcs1').should.equal(rsaPublicPKCS1)
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(rsaPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -67,12 +73,11 @@ describe('keyto', () => {
       })
 
       it('should not convert to privatePKCS1', () => {
-        expect(() => key.toString('pem', 'private')).to.throw('Cannot export a private key from a public key')
-        expect(() => key.toString('pem', 'pkcs1')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privatePKCS8', () => {
-        expect(() => key.toString('pem', 'pkcs8')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privateJwk', () => {
@@ -87,8 +92,12 @@ describe('keyto', () => {
         key = keyto.from(rsaPublicJwk, 'jwk')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(rsaPublicPem)
+      it('should convert to publicPKCS1', () => {
+        key.toString('pem', 'public_pkcs1').should.equal(rsaPublicPKCS1)
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(rsaPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -96,12 +105,11 @@ describe('keyto', () => {
       })
 
       it('should not convert to privatePKCS1', () => {
-        expect(() => key.toString('pem', 'private')).to.throw('Cannot export a private key from a public key')
-        expect(() => key.toString('pem', 'pkcs1')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privatePKCS8', () => {
-        expect(() => key.toString('pem', 'pkcs8')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privateJwk', () => {
@@ -116,8 +124,12 @@ describe('keyto', () => {
         key = keyto.from(rsaPrivatePKCS1, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(rsaPublicPem)
+      it('should convert to publicPKCS1', () => {
+        key.toString('pem', 'public_pkcs1').should.equal(rsaPublicPKCS1)
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(rsaPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -125,12 +137,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(rsaPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(rsaPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(rsaPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(rsaPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(rsaPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
@@ -145,8 +156,12 @@ describe('keyto', () => {
         key = keyto.from(rsaPrivatePKCS8, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(rsaPublicPem)
+      it('should convert to publicPKCS1', () => {
+        key.toString('pem', 'public_pkcs1').should.equal(rsaPublicPKCS1)
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(rsaPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -154,12 +169,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(rsaPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(rsaPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(rsaPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(rsaPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(rsaPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
@@ -174,8 +188,12 @@ describe('keyto', () => {
         key = keyto.from(rsaPrivateJwk, 'jwk')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(rsaPublicPem)
+      it('should convert to publicPKCS1', () => {
+        key.toString('pem', 'public_pkcs1').should.equal(rsaPublicPKCS1)
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(rsaPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -183,12 +201,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(rsaPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(rsaPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(rsaPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(rsaPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(rsaPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
@@ -199,15 +216,17 @@ describe('keyto', () => {
 
   describe('ECDSA', () => {
 
-    describe('publicPem', () => {
+    describe('publicPKCS8', () => {
 
       let key
       before(() => {
-        key = keyto.from(ecPublicPem, 'pem')
+        key = keyto.from(ecPublicPKCS8, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(ecPublicPem)
+      it('should convert to publicPKCS1')
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ecPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -215,12 +234,11 @@ describe('keyto', () => {
       })
 
       it('should not convert to privatePKCS1', () => {
-        expect(() => key.toString('pem', 'private')).to.throw('Cannot export a private key from a public key')
-        expect(() => key.toString('pem', 'pkcs1')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privatePKCS8', () => {
-        expect(() => key.toString('pem', 'pkcs8')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privateJwk', () => {
@@ -235,8 +253,10 @@ describe('keyto', () => {
         key = keyto.from(ecPublicJwk, 'jwk')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(ecPublicPem)
+      it('should convert to publicPKCS1')
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ecPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -244,12 +264,11 @@ describe('keyto', () => {
       })
 
       it('should not convert to privatePKCS1', () => {
-        expect(() => key.toString('pem', 'private')).to.throw('Cannot export a private key from a public key')
-        expect(() => key.toString('pem', 'pkcs1')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privatePKCS8', () => {
-        expect(() => key.toString('pem', 'pkcs8')).to.throw('Cannot export a private key from a public key')
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
       })
 
       it('should not convert to privateJwk', () => {
@@ -264,8 +283,10 @@ describe('keyto', () => {
         key = keyto.from(ecPrivatePKCS1, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(ecPublicPem)
+      it('should convert to publicPKCS1')
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ecPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -273,12 +294,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(ecPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(ecPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(ecPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(ecPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(ecPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
@@ -293,8 +313,10 @@ describe('keyto', () => {
         key = keyto.from(ecPrivatePKCS8, 'pem')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(ecPublicPem)
+      it('should convert to publicPKCS1')
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ecPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -302,12 +324,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(ecPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(ecPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(ecPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(ecPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(ecPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
@@ -322,8 +343,10 @@ describe('keyto', () => {
         key = keyto.from(ecPrivateJwk, 'jwk')
       })
 
-      it('should convert to publicPem', () => {
-        key.toString('pem', 'public').should.equal(ecPublicPem)
+      it('should convert to publicPKCS1')
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ecPublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
@@ -331,12 +354,11 @@ describe('keyto', () => {
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private').should.equal(ecPrivatePKCS1)
-        key.toString('pem', 'pkcs1').should.equal(ecPrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(ecPrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'pkcs8').should.equal(ecPrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(ecPrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
