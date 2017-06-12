@@ -120,7 +120,7 @@ class Key {
    * let key = keyto.from({ key: pemPrivate }, 'pem').toJwk('public')
    * assertEqual(jwk, key)
    *
-   * @example <caption>Decode HEX private key and convert to PEM public key</caption>
+   * @example <caption>Decode HEX private key and convert to PEM PKCS8 public key</caption>
    * const keyto = require('@eternaldeiwos/keyto')
    *
    * let hex = getPrivateHexStringSomehow()
@@ -128,7 +128,7 @@ class Key {
    *
    * // With Hex input, the 'kty' needs to be explicitly specified,
    * // as well as the 'crv' in the case of ECDSA hex encoded keys.
-   * let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('public', 'pem')
+   * let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('pem', 'public_pkcs8')
    * assertEqual(pemPublic, key)
    *
    * @throws {InvalidOperationError}
@@ -212,12 +212,12 @@ class Key {
       // TODO this is essentially a waste and needs refactoring for 1.0
       if (!kty && !data.kty) {
         kty = Key.getPemKeyType(base64pem, pvt)
-        pvt = pvt === 'PRIVATE' ? 'PRIVATE PKCS8' : 'PUBLIC PKCS8'
+        pvt = pvt === 'PRIVATE' ? 'private_pkcs8' : 'public_pkcs8'
 
       } else if (!kty && data.kty) {
         kty = data.kty
       } else {
-        pvt = pvt === 'PRIVATE' ? 'PRIVATE PKCS1' : 'PUBLIC PKCS1'
+        pvt = pvt === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
       }
 
       return new Key(base64pem, { kty, pvt, format })
@@ -313,19 +313,19 @@ class Key {
     // PEM
     if (format === 'pem') {
       switch (pvt) {
-        case 'PUBLIC PKCS1':
+        case 'public_pkcs1':
           this.key = type.fromPublicPKCS1(key)
           break
 
-        case 'PUBLIC PKCS8':
+        case 'public_pkcs8':
           this.key = type.fromPublicPKCS8(key)
           break
 
-        case 'PRIVATE PKCS1':
+        case 'private_pkcs1':
           this.key = type.fromPrivatePKCS1(key)
           break
 
-        case 'PRIVATE PKCS8':
+        case 'private_pkcs8':
           this.key = type.fromPrivatePKCS8(key)
           break
 
