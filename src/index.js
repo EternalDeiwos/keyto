@@ -371,7 +371,7 @@ class Key {
    * @description
    * Serialize a key to the specified format
    *
-   * @param  {SerializedFormat} [format=pem]
+   * @param  {SerializableFormat} [format=pem]
    * @param  {KeySelector} [selector=public]
    * @return {String}
    */
