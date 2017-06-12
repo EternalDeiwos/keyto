@@ -37,7 +37,17 @@ class RSA extends KeyType {
     return Buffer.from('0500', 'hex')
   }
 
-  static fromPKCS8 (base64pem) {
+  static fromPrivatePKCS1 (base64pem) {
+    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+
+    let buffer = Buffer.from(base64pem, 'base64')
+    let der = RSAPrivateKey.decode(buffer, 'der')
+    let data = Converter.convertObject(der, 'bn', 'raw')
+
+    return new RSA(data)
+  }
+
+  static fromPrivatePKCS8 (base64pem) {
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let RSAPrivateKey = asn.normalize('RSAPrivateKey')
 
@@ -49,17 +59,17 @@ class RSA extends KeyType {
     return new RSA(data)
   }
 
-  static fromPKCS1 (base64pem) {
-    let RSAPrivateKey = asn.normalize('RSAPrivateKey')
+  static fromPublicPKCS1 (base64pem) {
+    let RSAPublicKey = asn.normalize('RSAPublicKey')
 
     let buffer = Buffer.from(base64pem, 'base64')
-    let der = RSAPrivateKey.decode(buffer, 'der')
+    let der = RSAPublicKey.decode(buffer, 'der')
     let data = Converter.convertObject(der, 'bn', 'raw')
 
     return new RSA(data)
   }
 
-  static fromPublicPem (base64pem) {
+  static fromPublicPKCS8 (base64pem) {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
     let RSAPublicKey = asn.normalize('RSAPublicKey')
 
@@ -92,7 +102,7 @@ class RSA extends KeyType {
     return !!this.d
   }
 
-  toPKCS1 () {
+  toPrivatePKCS1 () {
     if (!this.isPrivate) {
       throw new InvalidOperationError('Cannot export a private key from a public key')
     }
@@ -107,7 +117,7 @@ class RSA extends KeyType {
     return RSA.formatPem(base64pem, 'RSA PRIVATE')
   }
 
-  toPKCS8 () {
+  toPrivatePKCS8 () {
     if (!this.isPrivate) {
       throw new InvalidOperationError('Cannot export a private key from a public key')
     }
@@ -132,7 +142,18 @@ class RSA extends KeyType {
     return RSA.formatPem(base64pem, 'PRIVATE')
   }
 
-  toPublicPem () {
+  toPublicPKCS1 () {
+    let RSAPublicKey = asn.normalize('RSAPublicKey')
+
+    let data = { version: 'two-prime' }
+    Object.assign(data, Converter.convertObject(this, 'raw', 'bn'))
+
+    let base64pem = RSAPublicKey.encode(data, 'der').toString('base64')
+
+    return RSA.formatPem(base64pem, 'RSA PUBLIC')
+  }
+
+  toPublicPKCS8 () {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
     let RSAPublicKey = asn.normalize('RSAPublicKey')
 
