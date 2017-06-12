@@ -5,14 +5,12 @@
 const cwd = process.cwd()
 const path = require('path')
 const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+const expect = chai.expect
 
 /**
  * Assertions
  * @ignore
  */
-chai.use(chaiAsPromised)
-const expect = chai.expect
 chai.should()
 
 /**
