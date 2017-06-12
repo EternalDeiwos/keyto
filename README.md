@@ -28,7 +28,7 @@ let key = keyto.from({ key: pemPrivate }, 'pem').toJwk('public')
 assertEqual(jwk, key)
 ```
 
-Translate Private Hex Key to Public PEM:
+Translate Private Hex Key to PKCS8 Public PEM:
 
 ```js
 const keyto = require('@trust/keyto')
@@ -38,7 +38,7 @@ let pemPublic = getPublicPemSomehow()
 
 // With Hex input, the 'kty' needs to be explicitly specified,
 // as well as the 'crv' in the case of ECDSA hex encoded keys.
-let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('public', 'pem')
+let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('pem', 'public_pkcs8')
 assertEqual(pemPublic, key)
 ```
 
@@ -80,12 +80,14 @@ Format can be any of these: 'pem', 'jwk', 'hex', 'raw', 'uint8_array' or 'blk'.
 * format = hex: will produce a hex encoded DER string. (WIP)
 * format = raw: will produce a buffer containing DER bytes. (WIP)
 * format = uint8_array: will produce a uint8 array containing DER bytes. (WIP)
-* format = blk: will produce a hex encoded key string as used on various blockchains (limited to secp256k1 keys)(WIP)
+* format = blk: will produce a hex encoded key string as used on various blockchains (limited to secp256k1 keys). (WIP)
 
-Selector can be any of these: 'public', 'private', 'pkcs1', 'pkcs8'.
+Selector can be any of these: 'public', 'private', 'public_pkcs1', 'public_pkcs8', 'private_pkcs1' or 'private_pkcs8'.
 
-selector = public: will produce a public key.
-selector = private: will produce a private key. When used with DER related encodings ('pem', 'raw', 'hex', 'uint8_array'), this is equivalent to 'PKCS1'.
-selector = pkcs1: will produce a private key according to the PKCS1 ASN Schema. Only relevant to DER related encodings.
-selector = pkcs8: will produce a private key according to the PKCS8 ASN Schema. Only relevant to DER related encodings.
+* selector = public: will produce a public key.
+* selector = private: will produce a private key.
+* selector = public_pkcs1: will produce a public key according to the PKCS1 ASN Schema. Only relevant to DER related encodings.
+* selector = public_pkcs8: will produce a public key according to the PKCS8 ASN Schema. Only relevant to DER related encodings.
+* selector = private_pkcs1: will produce a private key according to the PKCS1 ASN Schema. Only relevant to DER related encodings.
+* selector = private_pkcs8: will produce a private key according to the PKCS8 ASN Schema. Only relevant to DER related encodings.
 
