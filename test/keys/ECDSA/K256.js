@@ -14,7 +14,8 @@ MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgYv7my6fkdxQDfwFCsiap
 7Wt/zBbjlKNJ0rw5QL3SRG2hRANCAATUS0ymqmCKlITVo5+zSBiP+xK/zpUNu4G5
 H9U+mvYXpleqpkSFUISFqedb7riVecqVHRzr2/cD4M6OYXlH0VTn
 -----END PRIVATE KEY-----`
-const publicPem = `-----BEGIN PUBLIC KEY-----
+const publicPKCS1 = ``
+const publicPKCS8 = `-----BEGIN PUBLIC KEY-----
 MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE1EtMpqpgipSE1aOfs0gYj/sSv86VDbuB
 uR/VPpr2F6ZXqqZEhVCEhannW+64lXnKlR0c69v3A+DOjmF5R9FU5w==
 -----END PUBLIC KEY-----`
@@ -51,7 +52,8 @@ const publicJwk = `{
 module.exports = {
   privatePKCS1,
   privatePKCS8,
-  publicPem,
+  publicPKCS1,
+  publicPKCS8,
   privateHex,
   publicHex,
   privateJwk,

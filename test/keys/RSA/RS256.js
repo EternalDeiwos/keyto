@@ -107,7 +107,20 @@ nBFEvOU27RAgQlIR6vr74DXWDWKVnKxcqytlK/FM3EGX6nKm4L2gkivDxmaWczGQ
 0MyGmkqWnN3MX53i9rFW6VkrmqjeGcfQW3CA+dIH07yTfwYX5c3KbKuIbQ5Q0Efn
 AwPm10d/qtYJUQ71+mTUQoswRSm7
 -----END PRIVATE KEY-----`
-const publicPem = `-----BEGIN PUBLIC KEY-----
+const publicPKCS1 = `-----BEGIN RSA PUBLIC KEY-----
+MIICCgKCAgEAsgkUfSQXuPIoucywnKzuNBZhAqVNI3zwi4rqWu0RYmdUmjVEmkIY
+jxbibqz0uKe8WFA28nPfT9ybwOg25RXKMNMoKjJJndKp9pnoiYWUMVGOrDwFuNbN
+7xoOzvVWA6Fww8gcLh8vepdyprEfLQhfYADyI9mmMnMm7JAfrloV8DlG4FE60yYC
+5xPZnpSoeVknqtk1IPdSnSDz1hBGOqwH9wBWDTcAjwYfgCQbxMSvI3Zs3/8y1KTx
+0/4VkqyDqUn6pv+3I+y08OC2XlIy+LCNaDPRMBdY+sm45mlMwF4NpQHzrxgO7LYy
+rX/tk12ykWZGNkTsA5Xfb9+phKtUhLt5aw3xdgYRz7dAk7EE9APyjKw0B2NHanNp
+jdIAJ3istwdxITPk3N1X5n8d+fumiACIHicm8JvrjTfdcwtwA7C0kAQ+CwAjxsZ5
+OBJDfeGHHe6lMvWJhGZouTca/Tx94C6z+xxzunhEM38nabIZ9Cc4LDootX+w+GRG
+OXCdQKoz6p+41tmHDnIqqwIifY/z9KgdF1GXMixR0SrLh/HK0GanDfYynM0Hmen/
+BucpHFwadlNivFnDGIPWtWl8A5yAnRyjMclYM4S+3+2JlYotNfqMfVFaX9YHFsAW
+4KTQlXsOK3KptP5ciPm6relMvPqVDr99F2HVEX5e20Cixo20qMg8HgUCAwEAAQ==
+-----END RSA PUBLIC KEY-----`
+const publicPKCS8 = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsgkUfSQXuPIoucywnKzu
 NBZhAqVNI3zwi4rqWu0RYmdUmjVEmkIYjxbibqz0uKe8WFA28nPfT9ybwOg25RXK
 MNMoKjJJndKp9pnoiYWUMVGOrDwFuNbN7xoOzvVWA6Fww8gcLh8vepdyprEfLQhf
@@ -150,7 +163,8 @@ const publicJwk = `{
 module.exports = {
   privatePKCS1,
   privatePKCS8,
-  publicPem,
+  publicPKCS1,
+  publicPKCS8,
   privateJwk,
   publicJwk,
 }
