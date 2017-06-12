@@ -45,15 +45,19 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
-  static fromPKCS8 (base64pem) {
+  static fromPrivatePKCS1 (base64pem) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPKCS1 (base64pem) {
+  static fromPrivatePKCS8 (base64pem) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPublicPem (base64pem) {
+  static fromPublicPKCS1 (base64pem) {
+    throw new OperationNotSupportedError()
+  }
+
+  static fromPublicPKCS8 (base64pem) {
     throw new OperationNotSupportedError()
   }
 
@@ -77,15 +81,19 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
-  toPKCS8 () {
+  toPrivatePKCS1 () {
     throw new OperationNotSupportedError()
   }
 
-  toPKCS1 () {
+  toPrivatePKCS8 () {
     throw new OperationNotSupportedError()
   }
 
-  toPublicPem () {
+  toPublicPKCS1 () {
+    throw new OperationNotSupportedError()
+  }
+
+  toPublicPKCS8 () {
     throw new OperationNotSupportedError()
   }
 
