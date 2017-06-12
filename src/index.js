@@ -50,11 +50,22 @@ const asn = require('./asn1')
  * @see BufferFormat
  *
  * @description
- * Available formats: 'public', 'private', 'pkcs1', 'pkcs8'.
+ * Available formats: 'public', 'private'.
+ */
+
+/**
+ * PEMKeySelector
  *
- * Note that 'pkcs1' and 'pkcs8' refer specifically to different ASN
- * encodings for PEM encoded private keys and are not compatible with
- * non-PEM output types.
+ * @typedef {String} PEMKeySelector
+ *
+ * @see SerializableFormat
+ * @see BufferFormat
+ *
+ * @description
+ * Available formats: 'public_pkcs1', 'public_pkcs8', 'private_pkcs1', 'private_pkcs8'.
+ *
+ * Note these refer specifically to different ASN encodings for PEM encoded keys
+ * and are not compatible with non-PEM output types.
  */
 
 /**
@@ -192,7 +203,7 @@ class Key {
       let { header, base64pem } = this.stripPemHeader(key)
       let match = /^-----BEGIN ((RSA|EC) )?(PUBLIC|PRIVATE) KEY-----$/.exec(header)
       let kty = match ? match[2] : undefined
-      let pvt = match ? (match[3] === 'PRIVATE' ? 'PKCS1' : 'PUBLIC') : undefined
+      let pvt = match ? match[3] : undefined
 
       if (!pvt) {
         throw new InvalidOperationError('key is not a valid PEM string')
@@ -201,10 +212,12 @@ class Key {
       // TODO this is essentially a waste and needs refactoring for 1.0
       if (!kty && !data.kty) {
         kty = Key.getPemKeyType(base64pem, pvt)
-        pvt = pvt === 'PKCS1' ? 'PKCS8' : 'PUBLIC'
+        pvt = pvt === 'PRIVATE' ? 'PRIVATE PKCS8' : 'PUBLIC PKCS8'
 
       } else if (!kty && data.kty) {
         kty = data.kty
+      } else {
+        pvt = pvt === 'PRIVATE' ? 'PRIVATE PKCS1' : 'PUBLIC PKCS1'
       }
 
       return new Key(base64pem, { kty, pvt, format })
@@ -255,9 +268,9 @@ class Key {
     let buffer = Buffer.from(key, 'base64')
 
     let decoded
-    if (pvt === 'PKCS1') {
+    if (pvt === 'PRIVATE') {
       decoded = PrivateKeyInfo.decode(buffer, 'der')
-    } else {
+    } else if (pvt === 'PUBLIC') {
       decoded = PublicKeyInfo.decode(buffer, 'der')
     }
 
@@ -300,16 +313,20 @@ class Key {
     // PEM
     if (format === 'pem') {
       switch (pvt) {
-        case 'PUBLIC':
-          this.key = type.fromPublicPem(key)
+        case 'PUBLIC PKCS1':
+          this.key = type.fromPublicPKCS1(key)
           break
 
-        case 'PKCS1':
-          this.key = type.fromPKCS1(key)
+        case 'PUBLIC PKCS8':
+          this.key = type.fromPublicPKCS8(key)
           break
 
-        case 'PKCS8':
-          this.key = type.fromPKCS8(key)
+        case 'PRIVATE PKCS1':
+          this.key = type.fromPrivatePKCS1(key)
+          break
+
+        case 'PRIVATE PKCS8':
+          this.key = type.fromPrivatePKCS8(key)
           break
 
         default:
@@ -372,24 +389,26 @@ class Key {
    * Serialize a key to the specified format
    *
    * @param  {SerializableFormat} [format=pem]
-   * @param  {KeySelector} [selector=public]
+   * @param  {(KeySelector|PEMKeySelector)} [selector=public_pkcs8]
    * @return {String}
    */
-  toString(format = 'pem', selector = 'public') {
+  toString(format = 'pem', selector = 'public_pkcs8') {
     let { key, crv, alg } = this
 
     // PEM
     if (format === 'pem') {
       switch (selector) {
-        case 'public':
-          return key.toPublicPem()
+        case 'public_pkcs1':
+          return key.toPublicPKCS1()
 
-        case 'pkcs1':
-        case 'private':
-          return key.toPKCS1()
+        case 'public_pkcs8':
+          return key.toPublicPKCS8()
 
-        case 'pkcs8':
-          return key.toPKCS8()
+        case 'private_pkcs1':
+          return key.toPrivatePKCS1()
+
+        case 'private_pkcs8':
+          return key.toPrivatePKCS8()
 
         default:
           throw new Error('Invalid key selector')
