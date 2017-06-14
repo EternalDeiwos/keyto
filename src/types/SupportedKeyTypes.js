@@ -21,6 +21,7 @@ class SupportedKeyTypes {
     Object.defineProperty(this, '_ktyRegistry', { value: {}, enumerable: true })
     Object.defineProperty(this, '_paramsRegistry', { value: {}, enumerable: true })
     Object.defineProperty(this, '_oidRegistry', { value: {}, enumerable: true })
+    Object.defineProperty(this, '_namedCurveRegistry', { value: {}, enumerable: true })
   }
 
   /**
@@ -36,8 +37,12 @@ class SupportedKeyTypes {
     this._paramsRegistry[kty] = params
 
     params.forEach(param => {
-      let { oid } = param
+      let { oid, namedCurve } = param
       this._oidRegistry[oid] = kty
+
+      if (namedCurve) {
+        this._namedCurveRegistry[namedCurve] = oid
+      }
     })
   }
 
@@ -51,7 +56,7 @@ class SupportedKeyTypes {
    */
   normalize (kty, field, value) {
     let type = this._ktyRegistry[kty]
-    let params = this._paramsRegistry[kty].find()
+    let params = this._paramsRegistry[kty].find(params => params[field] === value)
 
     if (!type || !params) {
       throw new Error('Invalid type')
@@ -68,6 +73,16 @@ class SupportedKeyTypes {
    */
   type (oid) {
     return this._oidRegistry[oid]
+  }
+
+  /**
+   * oid
+   *
+   * @param  {String} namedCurve
+   * @return {String}
+   */
+  oid (namedCurve) {
+    return this._namedCurveRegistry[namedCurve]
   }
 }
 
