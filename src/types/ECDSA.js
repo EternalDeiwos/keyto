@@ -88,6 +88,18 @@ class ECDSA extends KeyType {
     }, { crv })
   }
 
+  static fromBlk (blk) {
+    let key
+
+    if (blk.startsWith('04')) {
+      key = ECDSA.makePoint(Buffer.from(blk, 'hex'))
+    } else {
+      key = { d: Converter.convert(blk, 'bn', 'raw') }
+    }
+
+    return new ECDSA(key)
+  }
+
   get isPrivate () {
     return !!this.d
   }
