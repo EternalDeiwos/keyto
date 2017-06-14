@@ -10,6 +10,62 @@ Project documentation is available [here](https://eternaldeiwos.github.io/keyto)
 
 ## Status
 
+### RSA
+
+- [x] PKCS1
+- [x] PKCS8
+- [x] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+
+### ECDSA - secp256k1 (Blockchain Curve)
+
+- [x] PKCS1
+- [x] PKCS8
+- [x] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+- [x] BLK (Private Key Hex String)
+
+### ECDSA - secp256r1 (P-256)
+
+- [ ] PKCS1
+- [ ] PKCS8
+- [ ] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+
+### ECDSA - secp384r1 (P-384)
+
+- [ ] PKCS1
+- [ ] PKCS8
+- [ ] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+
+### ECDSA - secp521r1 (P-512)
+
+- [ ] PKCS1
+- [ ] PKCS8
+- [ ] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+
+### EDDSA - ed25519
+
+- [ ] PKCS1
+- [ ] PKCS8
+- [ ] JWK
+- [ ] RAW
+- [ ] UINT8_ARRAY
+- [ ] HEX
+- [ ] BLK
+
 ## Usage
 
 Translate Private PEM to Public JWK:
@@ -28,17 +84,15 @@ let key = keyto.from({ key: pemPrivate }, 'pem').toJwk('public')
 assertEqual(jwk, key)
 ```
 
-Translate Private Hex Key to PKCS8 Public PEM:
+Translate Private Hex (Blockchain) Key to PKCS8 Public PEM:
 
 ```js
-const keyto = require('@trust/keyto')
+const keyto = require('@eternaldeiwos/keyto')
 
-let hex = getPrivateHexStringSomehow()
+let blk = getPrivateBlockchainHexStringSomehow()
 let pemPublic = getPublicPemSomehow()
 
-// With Hex input, the 'kty' needs to be explicitly specified,
-// as well as the 'crv' in the case of ECDSA hex encoded keys.
-let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('pem', 'public_pkcs8')
+let key = keyto.from(blk, 'blk').toString('pem', 'public_pkcs8')
 assertEqual(pemPublic, key)
 ```
 
@@ -80,7 +134,7 @@ Format can be any of these: 'pem', 'jwk', 'hex', 'raw', 'uint8_array' or 'blk'.
 * format = hex: will produce a hex encoded DER string. (WIP)
 * format = raw: will produce a buffer containing DER bytes. (WIP)
 * format = uint8_array: will produce a uint8 array containing DER bytes. (WIP)
-* format = blk: will produce a hex encoded key string as used on various blockchains (limited to secp256k1 keys). (WIP)
+* format = blk: will produce a hex encoded key string as used on various blockchains (limited to secp256k1 keys).
 
 Selector can be any of these: 'public', 'private', 'public_pkcs1', 'public_pkcs8', 'private_pkcs1' or 'private_pkcs8'.
 

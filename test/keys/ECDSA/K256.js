@@ -24,8 +24,7 @@ uR/VPpr2F6ZXqqZEhVCEhannW+64lXnKlR0c69v3A+DOjmF5R9FU5w==
  * Hex String
  * @ignore
  */
-const privateHex = ``
-const publicHex = ``
+const privateHex = `62fee6cba7e47714037f0142b226a9ed6b7fcc16e394a349d2bc3940bdd2446d`
 
 /**
  * JWK
@@ -55,7 +54,6 @@ module.exports = {
   publicPKCS1,
   publicPKCS8,
   privateHex,
-  publicHex,
   privateJwk,
   publicJwk,
 }

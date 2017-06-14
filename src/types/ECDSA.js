@@ -5,6 +5,8 @@
  * @ignore
  */
 const bignum = require('asn1.js').bignum
+const EC = require('elliptic').ec
+const ec = new EC('secp256k1')
 
 /**
  * Module Dependencies
@@ -86,6 +88,19 @@ class ECDSA extends KeyType {
       x: Converter.convert(x, 'base64url', 'raw'),
       y: Converter.convert(y, 'base64url', 'raw'),
     }, { crv })
+  }
+
+  static fromBlk (blk) {
+    let privateKey = ec.keyFromPrivate(blk, 'hex')
+    let publicKey = privateKey.getPublic()
+
+    let data = {
+      d: Converter.convert(privateKey.priv, 'bn', 'raw'),
+      x: Converter.convert(publicKey.getX(), 'bn', 'raw'),
+      y: Converter.convert(publicKey.getY(), 'bn', 'raw')
+    }
+
+    return new ECDSA(data)
   }
 
   get isPrivate () {
@@ -191,6 +206,16 @@ class ECDSA extends KeyType {
       x: Converter.convert(x, 'raw', 'base64url'),
       y: Converter.convert(y, 'raw', 'base64url'),
     }
+  }
+
+  toBlk () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
+    let { d } = this
+
+    return Converter.convert(d, 'raw', 'hex')
   }
 
   /**
