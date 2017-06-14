@@ -126,8 +126,6 @@ class Key {
    * let blk = getPrivateBlockchainHexStringSomehow()
    * let pemPublic = getPublicPemSomehow()
    *
-   * // With Hex input, the 'kty' needs to be explicitly specified,
-   * // as well as the 'crv' in the case of ECDSA hex encoded keys.
    * let key = keyto.from(blk, 'blk').toString('pem', 'public_pkcs8')
    * assertEqual(pemPublic, key)
    *
