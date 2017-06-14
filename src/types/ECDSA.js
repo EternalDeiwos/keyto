@@ -209,6 +209,10 @@ class ECDSA extends KeyType {
   }
 
   toBlk () {
+    if (!this.isPrivate) {
+      throw new InvalidOperationError('Cannot export a private key from a public key')
+    }
+
     let { d } = this
 
     return Converter.convert(d, 'raw', 'hex')
