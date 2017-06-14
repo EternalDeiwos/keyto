@@ -9,26 +9,33 @@ MHcCAQEEIN7doxnaLI4GtVJ9+X5sHqFjJIA5jWLB3mKZE2O9O1mBoAoGCCqGSM49
 AwEHoUQDQgAEbag3R0FTUvlLJGEM7zEhY2IGJgoEN4Q4UA7eR5Uh7BEIzXBGuT/3
 S9cNXKa6mWLTLIcBxEFVLcx1AVQJKrkFXQ==
 -----END EC PRIVATE KEY-----`
-const privatePKCS8 = ``
-const publicPKCS1 = ``
+const privatePKCS8 = `-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3t2jGdosjga1Un35
+fmweoWMkgDmNYsHeYpkTY707WYGhRANCAARtqDdHQVNS+UskYQzvMSFjYgYmCgQ3
+hDhQDt5HlSHsEQjNcEa5P/dL1w1cprqZYtMshwHEQVUtzHUBVAkquQVd
+-----END PRIVATE KEY-----`
 const publicPKCS8 = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEbag3R0FTUvlLJGEM7zEhY2IGJgoE
 N4Q4UA7eR5Uh7BEIzXBGuT/3S9cNXKa6mWLTLIcBxEFVLcx1AVQJKrkFXQ==
 -----END PUBLIC KEY-----`
 
 /**
- * Hex String
- * @ignore
- */
-const privateHex = ``
-const publicHex = ``
-
-/**
  * JWK
  * @ignore
  */
-const privateJwk = ``
-const publicJwk = ``
+const privateJwk = `{
+  "kty": "EC",
+  "crv": "P-256",
+  "d": "3t2jGdosjga1Un35fmweoWMkgDmNYsHeYpkTY707WYE",
+  "x": "bag3R0FTUvlLJGEM7zEhY2IGJgoEN4Q4UA7eR5Uh7BE",
+  "y": "CM1wRrk_90vXDVymupli0yyHAcRBVS3MdQFUCSq5BV0"
+}`
+const publicJwk = `{
+  "kty": "EC",
+  "crv": "P-256",
+  "x": "bag3R0FTUvlLJGEM7zEhY2IGJgoEN4Q4UA7eR5Uh7BE",
+  "y": "CM1wRrk_90vXDVymupli0yyHAcRBVS3MdQFUCSq5BV0"
+}`
 
 /**
  * Export
@@ -37,10 +44,7 @@ const publicJwk = ``
 module.exports = {
   privatePKCS1,
   privatePKCS8,
-  publicPKCS1,
   publicPKCS8,
-  privateHex,
-  publicHex,
   privateJwk,
   publicJwk,
 }
