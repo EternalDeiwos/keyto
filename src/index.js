@@ -89,7 +89,7 @@ class Key {
    * @param  {String} [options.crv] - normalized curve name (EC & ED only)
    * @param  {String} [options.alg] - JWA algorithm name
    * @param  {String} [options.oid] - ASN oid algorithm descriptor
-   * @param  {String} [options.pvt] - PUBLIC, PKCS1 or PKCS8 (PEM only)
+   * @param  {String} [options.pvt]
    * @param  {(String|Array)} [options.oid] - PKCS algorithm oid
    */
   constructor (key, options) {
@@ -120,22 +120,22 @@ class Key {
    * let key = keyto.from({ key: pemPrivate }, 'pem').toJwk('public')
    * assertEqual(jwk, key)
    *
-   * @example <caption>Decode HEX private key and convert to PEM PKCS8 public key</caption>
+   * @example <caption>Decode HEX (Blockchain) private key and convert to PEM PKCS8 public key</caption>
    * const keyto = require('@eternaldeiwos/keyto')
    *
-   * let hex = getPrivateHexStringSomehow()
+   * let blk = getPrivateBlockchainHexStringSomehow()
    * let pemPublic = getPublicPemSomehow()
    *
    * // With Hex input, the 'kty' needs to be explicitly specified,
    * // as well as the 'crv' in the case of ECDSA hex encoded keys.
-   * let key = keyto.from({ key: hex, kty: 'EC', crv: 'K-256' }, 'hex').toString('pem', 'public_pkcs8')
+   * let key = keyto.from(blk, 'blk').toString('pem', 'public_pkcs8')
    * assertEqual(pemPublic, key)
    *
    * @throws {InvalidOperationError}
    * If format is omitted.
    *
    * @throws {InvalidOperationError}
-   * If format is not 'pem' or 'jwk' and kty is omitted.
+   * If format is not 'pem', 'jwk' or 'blk' and kty is omitted.
    *
    * @param  {(Object|JWK|String|Array|Buffer)} data
    * @param  {(JWK|String|Array|Buffer)} data.key
