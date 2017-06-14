@@ -349,13 +349,16 @@ class Key {
    * @return {JWK}
    */
   toJwk (selector) {
-    let { key, alg } = this
+    let { key, alg, selector: type } = this
 
     switch (selector) {
       case 'public':
         return alg.toPublicJwk(key)
 
       case 'private':
+        if (type.contains('public')) {
+          throw new InvalidOperationError('Cannot export a private key from a public key')
+        }
         return alg.toPrivateJwk(key)
 
       default:
@@ -376,7 +379,7 @@ class Key {
    * @return {String}
    */
   toString(format = 'pem', selector = 'public_pkcs8') {
-    let { key, alg } = this
+    let { key, alg, selector: type } = this
 
     // PEM
     if (format === 'pem') {
@@ -388,9 +391,15 @@ class Key {
           return alg.toPublicPKCS8(key)
 
         case 'private_pkcs1':
+          if (type.contains('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
           return alg.toPrivatePKCS1(key)
 
         case 'private_pkcs8':
+          if (type.contains('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
           return alg.toPrivatePKCS8(key)
 
         default:
@@ -404,6 +413,9 @@ class Key {
           return JSON.stringify(alg.toPublicJwk(key))
 
         case 'private':
+          if (type.contains('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
           return JSON.stringify(alg.toPrivateJwk(key))
 
         default:
@@ -414,6 +426,9 @@ class Key {
     } else if (format === 'blk') {
       switch (selector) {
         case 'private':
+          if (type.contains('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
           return alg.toBlk(key)
 
         case 'public':
