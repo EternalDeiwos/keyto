@@ -17,6 +17,8 @@ class KeyType {
    *
    * @class KeyType
    *
+   * @internal For internal use only
+   *
    * @description
    * Abstract KeyType class
    */
@@ -24,14 +26,9 @@ class KeyType {
     this.params = params
   }
 
-  static formatPem (base64pem, descriptor) {
-    return `-----BEGIN ${descriptor} KEY-----\n`
-    + base64pem.match(/.{1,64}/g).join('\n')
-    + `\n-----END ${descriptor} KEY-----`
-  }
-
   /**
    * IMPORT
+   * @ignore
    */
 
   fromPrivatePKCS1 (key) {
@@ -60,6 +57,7 @@ class KeyType {
 
   /**
    * EXPORT
+   * @ignore
    */
 
   toPrivatePKCS1 (key) {
@@ -88,6 +86,17 @@ class KeyType {
 
   toBlk (key) {
     throw new OperationNotSupportedError()
+  }
+
+  /**
+   * HELPERS
+   * @ignore
+   */
+
+  static formatPem (base64pem, descriptor) {
+    return `-----BEGIN ${descriptor} KEY-----\n`
+    + base64pem.match(/.{1,64}/g).join('\n')
+    + `\n-----END ${descriptor} KEY-----`
   }
 }
 
