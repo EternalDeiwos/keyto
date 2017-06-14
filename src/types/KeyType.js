@@ -65,6 +65,10 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
+  static fromBlk (blk) {
+    throw new OperationNotSupportedError()
+  }
+
   static fromJwk (jwk) {
     throw new OperationNotSupportedError()
   }
