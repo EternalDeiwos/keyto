@@ -9,6 +9,9 @@ class SupportedKeyTypes {
   /**
    * constructor
    *
+   * @internal
+   * For internal use.
+   *
    * @class SupportedKeyTypes
    *
    * @description
@@ -16,62 +19,55 @@ class SupportedKeyTypes {
    */
   constructor () {
     Object.defineProperty(this, '_ktyRegistry', { value: {}, enumerable: true })
+    Object.defineProperty(this, '_paramsRegistry', { value: {}, enumerable: true })
     Object.defineProperty(this, '_oidRegistry', { value: {}, enumerable: true })
-    Object.defineProperty(this, '_algRegistry', { value: {}, enumerable: true })
   }
 
-  get types () {
-    return this._ktyRegistry
-  }
-
-  get oids () {
-    return this._oidRegistry
-  }
-
-  get algs () {
-    return this._algRegistry
-  }
-
-  define (cls, kty, oids, algs) {
+  /**
+   * define
+   *
+   * @param  {[type]} params [description]
+   * @param  {[type]} kty    [description]
+   * @param  {[type]} cls    [description]
+   * @return {[type]}        [description]
+   */
+  define (params, kty, cls) {
     this._ktyRegistry[kty] = cls
+    this._paramsRegistry[kty] = params
 
-    if (typeof oids === 'string') {
-      this._oidRegistry[oids] = cls
-
-    } else if (Array.isArray(oids)) {
-      if (oids.length === 0) {
-        throw new Error('Invalid OID')
-
-      } else if (Array.isArray(oids[0])) {
-        oids.map(oid => oid.join('.'))
-          .forEach(oid => this._oidRegistry[oid] = cls)
-
-      } else {
-        this._oidRegistry[oids.join('.')] = cls
-      }
-    }
-
-    if (typeof algs === 'string') {
-      this._algRegistry[algs] = cls
-    } else if (Array.isArray(algs)) {
-      algs.forEach(alg => this._algRegistry[alg] = cls)
-    }
+    params.forEach(param => {
+      let { oid } = param
+      this._oidRegistry[oid] = kty
+    })
   }
 
-  normalizeKty (kty) {
-    return this.types[kty]
-  }
+  /**
+   * normalize
+   *
+   * @param  {[type]} kty   [description]
+   * @param  {[type]} field [description]
+   * @param  {[type]} value [description]
+   * @return {[type]}       [description]
+   */
+  normalize (kty, field, value) {
+    let type = this._ktyRegistry[kty]
+    let params = this._paramsRegistry[kty].find()
 
-  normalizeAlg (alg) {
-    return this.algs[alg]
-  }
-
-  normalizeOid (oid) {
-    if (Array.isArray(oid)) {
-      oid = oid.join('.')
+    if (!type || !params) {
+      throw new Error('Invalid type')
     }
 
-    return this.oids[oid]
+    return new type(params)
+  }
+
+  /**
+   * type
+   *
+   * @param  {String} oid
+   * @return {String}
+   */
+  type (oid) {
+    return this._oidRegistry[oid]
   }
 }
 
