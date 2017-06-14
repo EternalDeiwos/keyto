@@ -159,7 +159,7 @@ class Key {
     if (!format) {
       throw new InvalidOperationError('format is required')
 
-    } else if (format !== 'pem' && format !== 'jwk' && !data.kty) {
+    } else if (format !== 'pem' && format !== 'jwk' && format !== 'blk' && !data.kty) {
       throw new InvalidOperationError(`kty is required if format is not 'pem' or 'jwk'`)
     }
 
@@ -236,6 +236,10 @@ class Key {
     // UINT8_ARRAY
     if (format === 'uint8_array') {
       throw new OperationNotSupportedError()
+    }
+
+    if (format === 'blk') {
+      return new Key(key, { kty: 'EC', format })
     }
 
     throw new InvalidOperationError(`Invalid format ${format}`)
@@ -353,6 +357,11 @@ class Key {
     if (format === 'uint8_array') {
       throw new OperationNotSupportedError()
     }
+
+    // BLK
+    if (format === 'blk') {
+      this.key = type.fromBlk(key)
+    }
   }
 
   /**
@@ -426,6 +435,10 @@ class Key {
         default:
           throw new Error('Invalid key selector')
       }
+
+    // BLK
+    } else if (format === 'blk') {
+      return key.toBlk()
     }
 
     throw new OperationNotSupportedError()
