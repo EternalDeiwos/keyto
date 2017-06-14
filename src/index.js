@@ -196,20 +196,25 @@ class Key {
       }
 
       let { kty, crv } = jwk
+      let oid
 
       // Required properties
       if (!kty) {
         throw new InvalidOperationError('kty is required for JWK')
       }
 
-      if (!crv) {
-        throw new InvalidOperationError('crv is required for JWK')
+      if (kty === 'EC' && !crv) {
+        throw new InvalidOperationError('crv is required for EC JWK')
+      }
+
+      if (kty === 'RSA') {
+        oid = types._paramsRegistry[kty][0].oid
       }
 
       // Key type
       let selector = jwk.d ? 'private' : 'public'
 
-      return new Key(jwk, { kty, crv, format, selector })
+      return new Key(jwk, { kty, crv, oid, format, selector })
     }
 
     // PEM
@@ -219,14 +224,14 @@ class Key {
       }
 
       // Extract Base64 String
-      let lines = pem.split('\n')
+      let lines = key.split('\n')
       let header = lines.splice(0, 1)
       lines.splice(lines.length-1, 1)
       let base64pem = lines.join('')
 
       // Extract metadata from header
       let match = /^-----BEGIN ((RSA|EC) )?(PUBLIC|PRIVATE) KEY-----$/.exec(header)
-      let kty = match ? match[2] : undefined
+      let oid, crv, kty = match ? match[2] : undefined
       let selector = match ? match[3] : undefined
       let pem = Buffer.from(base64pem, 'base64')
 
@@ -249,7 +254,7 @@ class Key {
         }
 
         let { algorithm: { algorithm } } = decoded
-        let oid = algorithm.join('.')
+        oid = algorithm.join('.')
         kty = types.type(oid)
 
         if (!kty) {
@@ -258,10 +263,29 @@ class Key {
 
       // PKCS1
       } else {
-        selector = selector === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
+
+        if (kty === 'RSA') {
+          selector = selector === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
+          oid = types._paramsRegistry[kty][0].oid
+
+        } else if (kty === 'EC') {
+          let decoded
+          if (selector === 'PRIVATE') {
+            let KeyType = asn.normalize(`${kty}PrivateKey`)
+            selector = 'private_pkcs1'
+            decoded = KeyType.decode(pem, 'der')
+          } else if (selector === 'PUBLIC') {
+            let KeyType = asn.normalize(`${kty}PrivateKey`)
+            selector = 'public_pkcs1'
+            decoded = KeyType.decode(pem, 'der')
+          }
+
+          let { parameters: { value } } = decoded
+          crv = types.normalize(kty, 'namedCurve', value.join('.')).params.crv
+        }
       }
 
-      return new Key(pem, { kty, oid, format, selector })
+      return new Key(pem, { kty, oid, crv, format, selector })
     }
 
     // BLK
@@ -307,20 +331,16 @@ class Key {
     if (format === 'pem') {
       switch (selector) {
         case 'public_pkcs1':
-          this.key = alg.fromPublicPKCS1(key)
-          break
+          return alg.fromPublicPKCS1(key)
 
         case 'public_pkcs8':
-          this.key = alg.fromPublicPKCS8(key)
-          break
+          return alg.fromPublicPKCS8(key)
 
         case 'private_pkcs1':
-          this.key = alg.fromPrivatePKCS1(key)
-          break
+          return alg.fromPrivatePKCS1(key)
 
         case 'private_pkcs8':
-          this.key = alg.fromPrivatePKCS8(key)
-          break
+          return alg.fromPrivatePKCS8(key)
 
         default:
           throw new Error('Invalid selector value')
@@ -329,12 +349,12 @@ class Key {
 
     // JWK
     if (format === 'jwk') {
-      this.key = alg.fromJwk(key, selector)
+      return alg.fromJwk(key, selector)
     }
 
     // BLK
     if (format === 'blk') {
-      this.key = alg.fromBlk(key)
+      return alg.fromBlk(key)
     }
   }
 
@@ -356,7 +376,7 @@ class Key {
         return alg.toPublicJwk(key)
 
       case 'private':
-        if (type.contains('public')) {
+        if (type.includes('public')) {
           throw new InvalidOperationError('Cannot export a private key from a public key')
         }
         return alg.toPrivateJwk(key)
@@ -391,13 +411,13 @@ class Key {
           return alg.toPublicPKCS8(key)
 
         case 'private_pkcs1':
-          if (type.contains('public')) {
+          if (type.includes('public')) {
             throw new InvalidOperationError('Cannot export a private key from a public key')
           }
           return alg.toPrivatePKCS1(key)
 
         case 'private_pkcs8':
-          if (type.contains('public')) {
+          if (type.includes('public')) {
             throw new InvalidOperationError('Cannot export a private key from a public key')
           }
           return alg.toPrivatePKCS8(key)
@@ -413,7 +433,7 @@ class Key {
           return JSON.stringify(alg.toPublicJwk(key))
 
         case 'private':
-          if (type.contains('public')) {
+          if (type.includes('public')) {
             throw new InvalidOperationError('Cannot export a private key from a public key')
           }
           return JSON.stringify(alg.toPrivateJwk(key))
@@ -426,7 +446,7 @@ class Key {
     } else if (format === 'blk') {
       switch (selector) {
         case 'private':
-          if (type.contains('public')) {
+          if (type.includes('public')) {
             throw new InvalidOperationError('Cannot export a private key from a public key')
           }
           return alg.toBlk(key)
