@@ -20,11 +20,8 @@ class KeyType {
    * @description
    * Abstract KeyType class
    */
-  constructor (data, options={}) {
-    Object.assign(this, data)
-    Object.keys(options).map(key => {
-      Object.defineProperty(this, key, { value: options[key] })
-    })
+  constructor (params) {
+    this.params = params
   }
 
   static formatPem (base64pem, descriptor) {
@@ -33,91 +30,63 @@ class KeyType {
     + `\n-----END ${descriptor} KEY-----`
   }
 
-  static get kty () {
+  /**
+   * IMPORT
+   */
+
+  fromPrivatePKCS1 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static get oid () {
+  fromPrivatePKCS8 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static get parameters () {
+  fromPublicPKCS1 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPrivatePKCS1 (base64pem) {
+  fromPublicPKCS8 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPrivatePKCS8 (base64pem) {
+  fromJwk (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPublicPKCS1 (base64pem) {
+  fromBlk (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromPublicPKCS8 (base64pem) {
+  /**
+   * EXPORT
+   */
+
+  toPrivatePKCS1 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromHex (hex, options) {
+  toPrivatePKCS8 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromBlk (blk) {
+  toPublicPKCS1 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromJwk (jwk) {
+  toPublicPKCS8 (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromBuffer (buffer, options) {
+  toPrivateJwk (key) {
     throw new OperationNotSupportedError()
   }
 
-  static fromArray (array, options) {
+  toPublicJwk (key) {
     throw new OperationNotSupportedError()
   }
 
-  get isPrivate () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPrivatePKCS1 () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPrivatePKCS8 () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPublicPKCS1 () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPublicPKCS8 () {
-    throw new OperationNotSupportedError()
-  }
-
-  toHex () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPrivateJwk () {
-    throw new OperationNotSupportedError()
-  }
-
-  toPublicJwk () {
-    throw new OperationNotSupportedError()
-  }
-
-  toBuffer () {
-    throw new OperationNotSupportedError()
-  }
-
-  toArray () {
+  toBlk (key) {
     throw new OperationNotSupportedError()
   }
 }
