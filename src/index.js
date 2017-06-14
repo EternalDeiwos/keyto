@@ -29,7 +29,7 @@ const asn = require('./asn1')
  * @typedef {String} SerializableFormat
  *
  * @description
- * Available formats: 'jwk', 'pem', 'hex'.
+ * Available formats: 'jwk', 'pem', 'hex', 'blk'.
  */
 
 /**
@@ -438,7 +438,17 @@ class Key {
 
     // BLK
     } else if (format === 'blk') {
-      return key.toBlk()
+      switch (selector) {
+        case 'private':
+          return key.toBlk()
+
+        case 'public':
+          throw new OperationNotSupportedError()
+
+        default:
+          throw new Error('Invalid key selector')
+
+      }
     }
 
     throw new OperationNotSupportedError()
