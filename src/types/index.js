@@ -45,24 +45,24 @@ supportedKeyTypes.define([
     keyVersion: 1,
     infoVersion: 'two-prime',
   },
-  // {
-  //   kty: 'EC',
-  //   crv: 'P-384',
-  //   oid: '',
-  //   namedCurve: '',
-  //   algParameters: '',
-  //   keyVersion: 1,
-  //   infoVersion: 'two-prime',
-  // },
-  // {
-  //   kty: 'EC',
-  //   crv: 'P-512',
-  //   oid: '',
-  //   namedCurve: '',
-  //   algParameters: '',
-  //   keyVersion: 1,
-  //   infoVersion: 'two-prime',
-  // },
+  {
+    kty: 'EC',
+    crv: 'P-384',
+    oid: '1.2.840.10045.2.1',
+    namedCurve: '1.3.132.0.34',
+    algParameters: '06052b81040022',
+    keyVersion: 1,
+    infoVersion: 'two-prime',
+  },
+  {
+    kty: 'EC',
+    crv: 'P-512',
+    oid: '1.2.840.10045.2.1',
+    namedCurve: '1.3.132.0.35',
+    algParameters: '06052b81040023',
+    keyVersion: 1,
+    infoVersion: 'two-prime',
+  },
 ], ECDSA)
 
 // EDDSA
