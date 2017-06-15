@@ -29,16 +29,7 @@ const asn = require('./asn1')
  * @typedef {String} SerializableFormat
  *
  * @description
- * Available formats: 'jwk', 'pem', 'hex', 'blk'.
- */
-
-/**
- * BufferFormat
- *
- * @typedef {String} BufferFormat
- *
- * @description
- * Available formats: 'raw', 'uint8_array'.
+ * Available formats: 'jwk', 'pem', 'blk'.
  */
 
 /**
@@ -90,7 +81,7 @@ class Key {
    *
    * @param  {Object} key
    * @param  {Object} options
-   * @param  {String} options.format
+   * @param  {SerializableFormat} options.format
    * @param  {String} options.kty - normalized key type name
    * @param  {String} [options.crv] - normalized curve name (EC & ED only)
    * @param  {String} [options.oid] - ASN oid algorithm descriptor
@@ -165,8 +156,8 @@ class Key {
    * @throws {InvalidOperationError}
    * If format is omitted.
    *
-   * @param  {(JWK|String|Array|Buffer)} key
-   * @param  {(SerializableFormat|BufferFormat)} format
+   * @param  {(JWK|String)} key
+   * @param  {SerializableFormat} format
    * @return {Key}
    */
   static from (key, format) {
