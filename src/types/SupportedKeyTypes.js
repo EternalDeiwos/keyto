@@ -18,71 +18,59 @@ class SupportedKeyTypes {
    * A registry for supported asn key types
    */
   constructor () {
-    Object.defineProperty(this, '_ktyRegistry', { value: {}, enumerable: true })
-    Object.defineProperty(this, '_paramsRegistry', { value: {}, enumerable: true })
-    Object.defineProperty(this, '_oidRegistry', { value: {}, enumerable: true })
-    Object.defineProperty(this, '_namedCurveRegistry', { value: {}, enumerable: true })
+    this.registry = []
+    this.classes = {}
+  }
+
+  /**
+   * find
+   *
+   * @param  {Function} fn
+   * @return {Object}
+   */
+  find (fn) {
+    return this.registry.find(fn)
   }
 
   /**
    * define
    *
-   * @param  {[type]} params [description]
-   * @param  {[type]} kty    [description]
-   * @param  {[type]} cls    [description]
-   * @return {[type]}        [description]
+   * @param  {Object} params
+   * @param  {KeyType} cls
    */
-  define (params, kty, cls) {
-    this._ktyRegistry[kty] = cls
-    this._paramsRegistry[kty] = params
-
+  define (params, cls) {
     params.forEach(param => {
-      let { oid, namedCurve } = param
-      this._oidRegistry[oid] = kty
+      let { kty } = param
 
-      if (namedCurve) {
-        this._namedCurveRegistry[namedCurve] = oid
+      if (!kty) {
+        throw new Error('Invalid type definition')
       }
+
+      if (!this.classes[kty]) {
+        this.classes[kty] = cls
+      }
+
+      this.registry.push(param)
     })
   }
 
   /**
    * normalize
    *
-   * @param  {[type]} kty   [description]
-   * @param  {[type]} field [description]
-   * @param  {[type]} value [description]
-   * @return {[type]}       [description]
+   * @param  {String} kty
+   * @param  {String} field
+   * @param  {Any} value
+   * @return {KeyType}
    */
   normalize (kty, field, value) {
-    let type = this._ktyRegistry[kty]
-    let params = this._paramsRegistry[kty].find(params => params[field] === value)
+    let type = this.classes[kty]
+    let params = this.find(params => params[field] === value)
 
     if (!type || !params) {
       throw new Error('Invalid type')
     }
 
     return new type(params)
-  }
-
-  /**
-   * type
-   *
-   * @param  {String} oid
-   * @return {String}
-   */
-  type (oid) {
-    return this._oidRegistry[oid]
-  }
-
-  /**
-   * oid
-   *
-   * @param  {String} namedCurve
-   * @return {String}
-   */
-  oid (namedCurve) {
-    return this._namedCurveRegistry[namedCurve]
   }
 }
 
