@@ -208,7 +208,7 @@ class Key {
       }
 
       if (kty === 'RSA') {
-        oid = types._paramsRegistry[kty][0].oid
+        oid = types.find(param => param.kty === kty).oid
       }
 
       // Key type
@@ -253,12 +253,19 @@ class Key {
           decoded = PublicKeyInfo.decode(pem, 'der')
         }
 
-        let { algorithm: { algorithm } } = decoded
-        oid = algorithm.join('.')
-        kty = types.type(oid)
+        let { algorithm: { algorithm, parameters } } = decoded
+        algorithm = algorithm.join('.')
+        parameters = parameters.toString('hex')
+        kty = types.find(param => param.oid === algorithm).kty
 
         if (!kty) {
           throw new OperationNotSupportedError()
+        }
+
+        if (kty === 'RSA') {
+          oid = algorithm
+        } else if (kty === 'EC') {
+          crv = types.find(param => param.algParameters === parameters).crv
         }
 
       // PKCS1
@@ -266,7 +273,7 @@ class Key {
 
         if (kty === 'RSA') {
           selector = selector === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
-          oid = types._paramsRegistry[kty][0].oid
+          oid = types.find(param => param.kty === kty).oid
 
         } else if (kty === 'EC') {
           let decoded
@@ -281,7 +288,7 @@ class Key {
           }
 
           let { parameters: { value } } = decoded
-          crv = types.normalize(kty, 'namedCurve', value.join('.')).params.crv
+          crv = types.find(param => param.namedCurve === value.join('.')).crv
         }
       }
 
