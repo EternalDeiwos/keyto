@@ -197,7 +197,10 @@ class ECDSA extends KeyType {
     let hexstr = Converter.convert(point, 'raw', 'hex')
     let x = hexstr.slice(2, ((hexstr.length - 2) / 2) + 2)
     let y = hexstr.slice(((hexstr.length - 2) / 2) + 2)
-    return Converter.convertObject({ x, y }, 'hex', 'raw')
+    return {
+      x: Converter.convert(x, 'hex', 'raw'),
+      y: Converter.convert(y, 'hex', 'raw'),
+    }
   }
 
   static makePoint (x, y) {
