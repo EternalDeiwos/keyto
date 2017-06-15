@@ -23,7 +23,7 @@ supportedKeyTypes.define([
     algParameters: '0500',
     version: 'two-prime',
   }
-], 'RSA', RSA)
+], RSA)
 
 // ECDSA
 supportedKeyTypes.define([
@@ -63,11 +63,11 @@ supportedKeyTypes.define([
   //   keyVersion: 1,
   //   infoVersion: 'two-prime',
   // },
-], 'EC', ECDSA)
+], ECDSA)
 
 // EDDSA
 supportedKeyTypes.define([
-], 'ED', EDDSA)
+], EDDSA)
 
 /**
  * Export
