@@ -91,26 +91,6 @@ class Converter {
   }
 
   /**
-   * convertObject
-   *
-   * @description
-   * Execute the same conversion operation over all fields in an object.
-   *
-   * @param  {Object} data
-   * @param  {String} fromType
-   * @param  {String} toType
-   * @return {Object}
-   */
-  static convertObject(data, fromType, toType) {
-    return Object.keys(data).reduce((state, field) => {
-      try {
-        state[field] = Converter.convert(data[field], fromType, toType)
-      } catch (e) { }
-      return state
-    }, {})
-  }
-
-  /**
    * pad
    *
    * @description

@@ -29,16 +29,7 @@ const asn = require('./asn1')
  * @typedef {String} SerializableFormat
  *
  * @description
- * Available formats: 'jwk', 'pem', 'hex', 'blk'.
- */
-
-/**
- * BufferFormat
- *
- * @typedef {String} BufferFormat
- *
- * @description
- * Available formats: 'raw', 'uint8_array'.
+ * Available formats: 'jwk', 'pem', 'blk'.
  */
 
 /**
@@ -79,26 +70,56 @@ class Key {
    *
    * @class Key
    *
+   * @internal For internal use only
+   *
    * @description
    * A high level class for accepting and processing keys
    *
+   * @throws {InvalidOperationError} If key is omitted
+   *
+   * @throws {InvalidOperationError} If required options are omitted
+   *
    * @param  {Object} key
    * @param  {Object} options
-   * @param  {String} options.format
+   * @param  {SerializableFormat} options.format
    * @param  {String} options.kty - normalized key type name
    * @param  {String} [options.crv] - normalized curve name (EC & ED only)
-   * @param  {String} [options.alg] - JWA algorithm name
    * @param  {String} [options.oid] - ASN oid algorithm descriptor
-   * @param  {String} [options.pvt]
-   * @param  {(String|Array)} [options.oid] - PKCS algorithm oid
+   * @param  {(KeySelector|PEMKeySelector)} options.selector
    */
   constructor (key, options) {
-    if (!options || !options.kty || !options.format) {
-      throw new InvalidOperationError('options.kty and options.format are required')
+    if (!key) {
+      throw new InvalidOperationError('key is required')
     }
 
-    Object.assign(this, options)
-    this.parseKey(key)
+    if (!options) {
+      throw new InvalidOperationError('options are required')
+    }
+
+    let { kty, format, selector, crv, oid } = options
+
+    if (!options.kty) {
+      throw new InvalidOperationError('options.kty is required')
+    }
+
+    if (!options.format) {
+      throw new InvalidOperationError('options.format is required')
+    }
+
+    if (!options.selector) {
+      throw new InvalidOperationError('options.selector is required')
+    }
+
+    if (!options.crv && !options.oid) {
+      throw new InvalidOperationError('options.crv or options.oid is required')
+    }
+
+    this.kty = kty
+    this.format = format
+    this.selector = selector
+    this.crv = crv
+    this.oid = oid
+    this.key = this.parseKey(key)
   }
 
   /**
@@ -130,66 +151,61 @@ class Key {
    * assertEqual(pemPublic, key)
    *
    * @throws {InvalidOperationError}
-   * If format is omitted.
+   * If key is omitted.
    *
    * @throws {InvalidOperationError}
-   * If format is not 'pem', 'jwk' or 'blk' and kty is omitted.
+   * If format is omitted.
    *
-   * @param  {(Object|JWK|String|Array|Buffer)} data
-   * @param  {(JWK|String|Array|Buffer)} data.key
-   * @param  {String} [data.kty] - normalized key type name
-   * @param  {String} [data.crv] - normalized curve name (EC & ED only)
-   * @param  {String} [data.alg] - normalized algorithm name (RSA only)
-   * @param  {(SerializableFormat|BufferFormat)} format
+   * @param  {(JWK|String)} key
+   * @param  {SerializableFormat} format
    * @return {Key}
    */
-  static from (data, format) {
-    if (!data) {
-      throw new InvalidOperationError('data is required')
-    }
-
-    let { key } = data
-    if (!key) {
-      key = data
-    }
-
+  static from (key, format) {
     // Sanity checking
+    if (!key) {
+      throw new InvalidOperationError('key is required')
+    }
+
     if (!format) {
       throw new InvalidOperationError('format is required')
-
-    } else if (format !== 'pem' && format !== 'jwk' && format !== 'blk' && !data.kty) {
-      throw new InvalidOperationError(`kty is required if format is not 'pem' or 'jwk'`)
     }
 
     // JWK
     if (format === 'jwk') {
-      let jwk = key
+      let jwk
 
+      // Parse JSON
       if (typeof key === 'string') {
         try {
           jwk = JSON.parse(key)
         } catch (error) {
           throw new InvalidOperationError('key is not a valid JWK')
         }
+
+      } else if (typeof key === 'object') {
+        jwk = key
       }
 
-      let { kty, crv, alg } = jwk
+      let { kty, crv } = jwk
+      let oid
 
-      if (!kty && !data.kty) {
-        throw new InvalidOperationError('kty is required')
-      } else if (!kty && data.kty) {
-        kty = data.kty
+      // Required properties
+      if (!kty) {
+        throw new InvalidOperationError('kty is required for JWK')
       }
 
-      if (!crv && data.crv) {
-        crv = data.crv
+      if (kty === 'EC' && !crv) {
+        throw new InvalidOperationError('crv is required for EC JWK')
       }
 
-      if (!alg && data.alg) {
-        alg = data.alg
+      if (kty === 'RSA') {
+        oid = types.find(param => param.kty === kty).oid
       }
 
-      return new Key(jwk, { kty, crv, alg, format })
+      // Key type
+      let selector = jwk.d ? 'private' : 'public'
+
+      return new Key(jwk, { kty, crv, oid, format, selector })
     }
 
     // PEM
@@ -198,109 +214,106 @@ class Key {
         throw new InvalidOperationError('key is not a valid PEM string')
       }
 
-      let { header, base64pem } = this.stripPemHeader(key)
-      let match = /^-----BEGIN ((RSA|EC) )?(PUBLIC|PRIVATE) KEY-----$/.exec(header)
-      let kty = match ? match[2] : undefined
-      let pvt = match ? match[3] : undefined
+      // Extract Base64 String
+      let lines = key.split('\n')
+      let header = lines.splice(0, 1)
+      lines.splice(lines.length-1, 1)
+      let base64pem = lines.join('')
 
-      if (!pvt) {
+      // Extract metadata from header
+      let match = /^-----BEGIN ((RSA|EC) )?(PUBLIC|PRIVATE) KEY-----$/.exec(header)
+      let oid, crv, kty = match ? match[2] : undefined
+      let selector = match ? match[3] : undefined
+      let pem = Buffer.from(base64pem, 'base64')
+
+      if (!selector) {
         throw new InvalidOperationError('key is not a valid PEM string')
       }
 
-      // TODO this is essentially a waste and needs refactoring for 1.0
-      if (!kty && !data.kty) {
-        kty = Key.getPemKeyType(base64pem, pvt)
-        pvt = pvt === 'PRIVATE' ? 'private_pkcs8' : 'public_pkcs8'
+      // PKCS8
+      if (!kty) {
+        let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
+        let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
-      } else if (!kty && data.kty) {
-        kty = data.kty
+        let decoded
+        if (selector === 'PRIVATE') {
+          selector = 'private_pkcs8'
+          decoded = PrivateKeyInfo.decode(pem, 'der')
+        } else if (selector === 'PUBLIC') {
+          selector = 'public_pkcs8'
+          decoded = PublicKeyInfo.decode(pem, 'der')
+        }
+
+        let { algorithm: { algorithm, parameters } } = decoded
+        algorithm = algorithm.join('.')
+        parameters = parameters.toString('hex')
+        kty = types.find(param => param.oid === algorithm).kty
+
+        if (!kty) {
+          throw new OperationNotSupportedError()
+        }
+
+        if (kty === 'RSA') {
+          oid = algorithm
+        } else if (kty === 'EC') {
+          crv = types.find(param => param.algParameters === parameters).crv
+        }
+
+      // PKCS1
       } else {
-        pvt = pvt === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
+
+        if (kty === 'RSA') {
+          selector = selector === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
+          oid = types.find(param => param.kty === kty).oid
+
+        } else if (kty === 'EC') {
+          let decoded
+          if (selector === 'PRIVATE') {
+            let KeyType = asn.normalize(`${kty}PrivateKey`)
+            selector = 'private_pkcs1'
+            decoded = KeyType.decode(pem, 'der')
+          } else if (selector === 'PUBLIC') {
+            let KeyType = asn.normalize(`${kty}PrivateKey`)
+            selector = 'public_pkcs1'
+            decoded = KeyType.decode(pem, 'der')
+          }
+
+          let { parameters: { value } } = decoded
+          crv = types.find(param => param.namedCurve === value.join('.')).crv
+        }
       }
 
-      return new Key(base64pem, { kty, pvt, format })
+      return new Key(pem, { kty, oid, crv, format, selector })
     }
 
-    // HEX
-    if (format === 'hex') {
-      throw new OperationNotSupportedError()
-    }
-
-    // RAW
-    if (format === 'raw') {
-      throw new OperationNotSupportedError()
-    }
-
-    // UINT8_ARRAY
-    if (format === 'uint8_array') {
-      throw new OperationNotSupportedError()
-    }
-
+    // BLK
     if (format === 'blk') {
-      return new Key(key, { kty: 'EC', format })
+      return new Key(key, { kty: 'EC', crv: 'K-256', format, selector: 'private' })
     }
 
     throw new InvalidOperationError(`Invalid format ${format}`)
   }
 
   /**
-   * stripPemHeader
-   * @ignore
-   *
-   * @internal For internal use only.
-   */
-  static stripPemHeader (pem) {
-    let lines = pem.split('\n')
-    let header = lines.splice(0, 1)
-    lines.splice(lines.length-1, 1)
-    let base64pem = lines.join('')
-
-    return { header, base64pem }
-  }
-
-  /**
-   * getPemKeyType
-   * @ignore
-   *
-   * @internal For internal use only.
-   */
-  static getPemKeyType (key, pvt) {
-    let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
-    let PublicKeyInfo = asn.normalize('PublicKeyInfo')
-    let buffer = Buffer.from(key, 'base64')
-
-    let decoded
-    if (pvt === 'PRIVATE') {
-      decoded = PrivateKeyInfo.decode(buffer, 'der')
-    } else if (pvt === 'PUBLIC') {
-      decoded = PublicKeyInfo.decode(buffer, 'der')
-    }
-
-    let { algorithm: { algorithm } } = decoded
-    let type = types.normalizeOid(algorithm)
-    let kty = type ? type.kty : undefined
-
-    if (!kty) {
-      throw new OperationNotSupportedError()
-    }
-
-    return kty
-  }
-
-  /**
-   * normalizedType
+   * alg
    * @ignore
    *
    * @internal For internal use only
    */
-  get normalizedType () {
-    let { kty } = this
+  get alg () {
+    let { kty, crv, oid } = this
 
-    if (kty) {
-      return types.normalizeKty(kty)
+    if (!this.algorithm) {
+      if (crv) {
+        Object.defineProperty(this, 'algorithm', { value: types.normalize(kty, 'crv', crv) })
+      } else if (oid) {
+        Object.defineProperty(this, 'algorithm', { value: types.normalize(kty, 'oid', oid) })
+      } else {
+        throw new Error('Both crv and oid are undefined')
+      }
     }
 
-    throw new OperationNotSupportedError()
+    return this.algorithm
   }
 
   /**
@@ -310,55 +323,36 @@ class Key {
    * @internal For internal use only
    */
   parseKey (key) {
-    let { crv, alg, oid, pvt, format, normalizedType: type } = this
+    let { alg, format, selector } = this
 
     // PEM
     if (format === 'pem') {
-      switch (pvt) {
+      switch (selector) {
         case 'public_pkcs1':
-          this.key = type.fromPublicPKCS1(key)
-          break
+          return alg.fromPublicPKCS1(key)
 
         case 'public_pkcs8':
-          this.key = type.fromPublicPKCS8(key)
-          break
+          return alg.fromPublicPKCS8(key)
 
         case 'private_pkcs1':
-          this.key = type.fromPrivatePKCS1(key)
-          break
+          return alg.fromPrivatePKCS1(key)
 
         case 'private_pkcs8':
-          this.key = type.fromPrivatePKCS8(key)
-          break
+          return alg.fromPrivatePKCS8(key)
 
         default:
-          throw new Error('Invalid pvt value')
+          throw new Error('Invalid selector value')
       }
     }
 
     // JWK
     if (format === 'jwk') {
-      this.key = type.fromJwk(key)
-    }
-
-    // HEX
-    if (format === 'hex') {
-      this.key = type.fromHex(key, { crv, oid })
-    }
-
-    // BUFFER
-    if (format === 'raw') {
-      throw new OperationNotSupportedError()
-    }
-
-    // UINT8_ARRAY
-    if (format === 'uint8_array') {
-      throw new OperationNotSupportedError()
+      return alg.fromJwk(key, selector)
     }
 
     // BLK
     if (format === 'blk') {
-      this.key = type.fromBlk(key)
+      return alg.fromBlk(key)
     }
   }
 
@@ -373,14 +367,17 @@ class Key {
    * @return {JWK}
    */
   toJwk (selector) {
-    let { key } = this
+    let { key, alg, selector: type } = this
 
     switch (selector) {
       case 'public':
-        return key.toPublicJwk()
+        return alg.toPublicJwk(key)
 
       case 'private':
-        return key.toPrivateJwk()
+        if (type.includes('public')) {
+          throw new InvalidOperationError('Cannot export a private key from a public key')
+        }
+        return alg.toPrivateJwk(key)
 
       default:
         throw new Error('Invalid key selector')
@@ -400,22 +397,28 @@ class Key {
    * @return {String}
    */
   toString(format = 'pem', selector = 'public_pkcs8') {
-    let { key, crv, alg } = this
+    let { key, alg, selector: type } = this
 
     // PEM
     if (format === 'pem') {
       switch (selector) {
         case 'public_pkcs1':
-          return key.toPublicPKCS1()
+          return alg.toPublicPKCS1(key)
 
         case 'public_pkcs8':
-          return key.toPublicPKCS8()
+          return alg.toPublicPKCS8(key)
 
         case 'private_pkcs1':
-          return key.toPrivatePKCS1()
+          if (type.includes('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
+          return alg.toPrivatePKCS1(key)
 
         case 'private_pkcs8':
-          return key.toPrivatePKCS8()
+          if (type.includes('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
+          return alg.toPrivatePKCS8(key)
 
         default:
           throw new Error('Invalid key selector')
@@ -425,10 +428,13 @@ class Key {
     } else if (format === 'jwk') {
       switch (selector) {
         case 'public':
-          return JSON.stringify(key.toPublicJwk())
+          return JSON.stringify(alg.toPublicJwk(key))
 
         case 'private':
-          return JSON.stringify(key.toPrivateJwk())
+          if (type.includes('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
+          return JSON.stringify(alg.toPrivateJwk(key))
 
         default:
           throw new Error('Invalid key selector')
@@ -438,7 +444,10 @@ class Key {
     } else if (format === 'blk') {
       switch (selector) {
         case 'private':
-          return key.toBlk()
+          if (type.includes('public')) {
+            throw new InvalidOperationError('Cannot export a private key from a public key')
+          }
+          return alg.toBlk(key)
 
         case 'public':
           throw new OperationNotSupportedError()

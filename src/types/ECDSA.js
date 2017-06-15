@@ -28,100 +28,79 @@ const asn = require('../asn1')
  */
 class ECDSA extends KeyType {
 
-  static get kty () {
-    return 'EC'
-  }
+  /**
+   * IMPORT
+   * @ignore
+   */
 
-  static get oid () {
-    return [ 1, 2, 840, 10045, 2, 1 ]
-  }
-
-  static get parameters () {
-    return Buffer.from('06052b8104000a', 'hex')
-  }
-
-  static fromPrivatePKCS1 (base64pem) {
+  fromPrivatePKCS1 (key) {
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
-    let buffer = Buffer.from(base64pem, 'base64')
-    let data = ECPrivateKey.decode(buffer, 'der')
-
+    let data = ECPrivateKey.decode(key, 'der')
     let { privateKey: d, publicKey: { data: publicKey } } = data
     let { x, y } = ECDSA.getPoint(publicKey)
 
-    return new ECDSA({ d, x, y })
+    return { d, x, y }
   }
 
-  static fromPrivatePKCS8 (base64pem) {
+  fromPrivatePKCS8 (key) {
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
-    let buffer = Buffer.from(base64pem, 'base64')
-    let info = PrivateKeyInfo.decode(buffer, 'der')
+    let info = PrivateKeyInfo.decode(key, 'der')
     let data = ECPrivateKey.decode(info.privateKey, 'der')
 
     let { privateKey: d, publicKey: { data: publicKey } } = data
     let { x, y } = ECDSA.getPoint(publicKey)
 
-    return new ECDSA({ d, x, y })
+    return { d, x, y }
   }
 
-  static fromPublicPKCS8 (base64pem) {
+  fromPublicPKCS8 (key) {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
-    let buffer = Buffer.from(base64pem, 'base64')
-    let info = PublicKeyInfo.decode(buffer, 'der')
-    let data = ECDSA.getPoint(info.publicKey.data)
-
-    return new ECDSA(data)
+    let info = PublicKeyInfo.decode(key, 'der')
+    return ECDSA.getPoint(info.publicKey.data)
   }
 
-  static fromJwk (jwk) {
-    let { d, x, y, crv } = jwk
+  fromJwk (key) {
+    let { d, x, y } = key
 
-    if (!crv) {
-      throw new Error('crv is required')
-    }
-
-    return new ECDSA({
+    return {
       d: Converter.convert(d, 'base64url', 'raw'),
       x: Converter.convert(x, 'base64url', 'raw'),
       y: Converter.convert(y, 'base64url', 'raw'),
-    }, { crv })
+    }
   }
 
-  static fromBlk (blk) {
-    let privateKey = ec.keyFromPrivate(blk, 'hex')
+  fromBlk (key) {
+    let privateKey = ec.keyFromPrivate(key, 'hex')
     let publicKey = privateKey.getPublic()
 
-    let data = {
+    return {
       d: Converter.convert(privateKey.priv, 'bn', 'raw'),
       x: Converter.convert(publicKey.getX(), 'bn', 'raw'),
-      y: Converter.convert(publicKey.getY(), 'bn', 'raw')
+      y: Converter.convert(publicKey.getY(), 'bn', 'raw'),
     }
-
-    return new ECDSA(data)
   }
 
-  get isPrivate () {
-    return !!this.d
-  }
+  /**
+   * EXPORT
+   * @ignore
+   */
 
-  toPrivatePKCS1 () {
-    if (!this.isPrivate) {
-      throw new InvalidOperationError('Cannot export a private key from a public key')
-    }
-
+  toPrivatePKCS1 (key) {
+    let { namedCurve, keyVersion: version } = this.params
+    let { d, x, y } = key
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
-    let { d, x, y } = this
     let publicKey = ECDSA.makePoint(x, y)
     let base64pem = ECPrivateKey.encode({
-      version: 1,
+      version,
       privateKey: d,
       parameters: {
         type: 'namedCurve',
-        value: [ 1, 3, 132, 0, 10 ]
+        value: namedCurve.split('.')
       },
       publicKey: {
         unused: 0,
@@ -132,18 +111,15 @@ class ECDSA extends KeyType {
     return ECDSA.formatPem(base64pem, 'EC PRIVATE')
   }
 
-  toPrivatePKCS8 () {
-    if (!this.isPrivate) {
-      throw new InvalidOperationError('Cannot export a private key from a public key')
-    }
-
+  toPrivatePKCS8 (key) {
+    let { oid, algParameters, keyVersion: version, infoVersion } = this.params
+    let { d, x, y } = key
     let PrivateKeyInfo = asn.normalize('PrivateKeyInfo')
     let ECPrivateKey = asn.normalize('ECPrivateKey')
 
-    let { d, x, y, constructor: { oid: algorithm, parameters } } = this
     let publicKey = ECDSA.makePoint(x, y)
     let privateKey = ECPrivateKey.encode({
-      version: 1,
+      version,
       privateKey: d,
       publicKey: {
         unused: 0,
@@ -152,10 +128,10 @@ class ECDSA extends KeyType {
     }, 'der')
 
     let base64pem = PrivateKeyInfo.encode({
-      version: 'two-prime',
+      version: infoVersion,
       algorithm: {
-        algorithm,
-        parameters
+        algorithm: oid.split('.'),
+        parameters: Buffer.from(algParameters, 'hex')
       },
       privateKey
     }, 'der').toString('base64')
@@ -163,63 +139,57 @@ class ECDSA extends KeyType {
     return ECDSA.formatPem(base64pem, 'PRIVATE')
   }
 
-  toPublicPKCS8 () {
+  toPublicPKCS8 (key) {
+    let { oid, algParameters } = this.params
+    let { x, y } = key
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
-    let data = ECDSA.makePoint(this.x, this.y)
+    let publicKey = ECDSA.makePoint(x, y)
     let base64pem = PublicKeyInfo.encode({
       algorithm: {
-        algorithm: ECDSA.oid,
-        parameters: ECDSA.parameters
+        algorithm: oid.split('.'),
+        parameters: Buffer.from(algParameters, 'hex')
       },
       publicKey: {
         unused: 0,
-        data
+        data: publicKey
       }
     }, 'der').toString('base64')
 
     return ECDSA.formatPem(base64pem, 'PUBLIC')
   }
 
-  toPrivateJwk () {
-    if (!this.isPrivate) {
-      throw new InvalidOperationError('Cannot export a private key from a public key')
-    }
-
-    let { d, x, y } = this
+  toPrivateJwk (key) {
+    let { crv, kty } = this.params
+    let { d, x, y } = key
 
     return {
-      kty: 'EC',
-      crv: 'K-256',
+      kty,
+      crv,
       d: Converter.convert(d, 'raw', 'base64url'),
       x: Converter.convert(x, 'raw', 'base64url'),
       y: Converter.convert(y, 'raw', 'base64url'),
     }
   }
 
-  toPublicJwk () {
-    let { x, y } = this
+  toPublicJwk (key) {
+    let { crv, kty } = this.params
+    let { x, y } = key
 
     return {
-      kty: 'EC',
-      crv: 'K-256',
+      kty,
+      crv,
       x: Converter.convert(x, 'raw', 'base64url'),
       y: Converter.convert(y, 'raw', 'base64url'),
     }
   }
 
-  toBlk () {
-    if (!this.isPrivate) {
-      throw new InvalidOperationError('Cannot export a private key from a public key')
-    }
-
-    let { d } = this
-
-    return Converter.convert(d, 'raw', 'hex')
+  toBlk (key) {
+    return key.d.toString('hex')
   }
 
   /**
-   * Helper Methods
+   * HELPERS
    * @ignore
    */
 
@@ -227,7 +197,10 @@ class ECDSA extends KeyType {
     let hexstr = Converter.convert(point, 'raw', 'hex')
     let x = hexstr.slice(2, ((hexstr.length - 2) / 2) + 2)
     let y = hexstr.slice(((hexstr.length - 2) / 2) + 2)
-    return Converter.convertObject({ x, y }, 'hex', 'raw')
+    return {
+      x: Converter.convert(x, 'hex', 'raw'),
+      y: Converter.convert(y, 'hex', 'raw'),
+    }
   }
 
   static makePoint (x, y) {

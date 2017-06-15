@@ -8,6 +8,10 @@ Keyto is pronounced 'key-to'.
 
 Project documentation is available [here](https://eternaldeiwos.github.io/keyto).
 
+### SemVer Notice
+
+This library is currently experimental. Until v1.0.0 is released, breaking changes will only incur a minor version increment.
+
 ## Status
 
 ### RSA
@@ -15,55 +19,37 @@ Project documentation is available [here](https://eternaldeiwos.github.io/keyto)
 - [x] PKCS1
 - [x] PKCS8
 - [x] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
 
 ### ECDSA - secp256k1 (Blockchain Curve)
 
-- [x] PKCS1
+- [x] PKCS1 (Private Only)
 - [x] PKCS8
 - [x] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
 - [x] BLK (Private Key Hex String)
 
 ### ECDSA - secp256r1 (P-256)
 
-- [ ] PKCS1
-- [ ] PKCS8
-- [ ] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
+- [x] PKCS1 (Private Only)
+- [x] PKCS8
+- [x] JWK
 
 ### ECDSA - secp384r1 (P-384)
 
-- [ ] PKCS1
-- [ ] PKCS8
-- [ ] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
+- [x] PKCS1 (Private Only)
+- [x] PKCS8
+- [x] JWK
 
 ### ECDSA - secp521r1 (P-512)
 
-- [ ] PKCS1
-- [ ] PKCS8
-- [ ] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
+- [x] PKCS1 (Private Only)
+- [x] PKCS8
+- [x] JWK
 
 ### EDDSA - ed25519
 
 - [ ] PKCS1
 - [ ] PKCS8
 - [ ] JWK
-- [ ] RAW
-- [ ] UINT8_ARRAY
-- [ ] HEX
 - [ ] BLK
 
 ## Usage
@@ -98,27 +84,33 @@ assertEqual(pemPublic, key)
 
 ## API
 
-### keyto.from(data, format) -> {Key}
+### keyto.from(key, format) -> {Key}
 
 **args**:
 
-* data := (Object|String|Array|Buffer)
-    - data.key := (Object|String|Array|Buffer)
-    - data.kty := String
-    - data.crv := String
-    - data.alg := String
+* key := (String|JWK)
 * format := String
 
-### {Key}.toJwk(selector = 'public') -> {Object}
+**format**:
+
+Format can be any of these: 'pem', 'jwk' or 'blk'.
+
+* format = pem: will parse a PEM encoded string (as per OpenSSL output).
+* format = jwk: will parse a JWK object or JSON String
+* format = blk: will parse a hex encoded key string as used on various blockchains (limited to secp256k1 keys).
+
+### {Key}.toJwk(selector = 'public') -> {JWK}
 
 **args**:
 
 * selector := String
 
+**selector**:
+
 Selector can be any of these: 'public', 'private'.
 
-selector = public: will produce a public JWK.
-selector = private: will produce a private JWK.
+* selector := public: will produce a public JWK.
+* selector := private: will produce a private JWK.
 
 ### {Key}.toString(format = 'pem', selector = 'public') -> {String}
 
@@ -127,14 +119,15 @@ selector = private: will produce a private JWK.
 * format := String
 * selector := String
 
-Format can be any of these: 'pem', 'jwk', 'hex', 'raw', 'uint8_array' or 'blk'.
+**format**:
+
+Format can be any of these: 'pem', 'jwk' or 'blk'.
 
 * format = pem: will produce a PEM encoded string (as per OpenSSL output).
 * format = jwk: will produce a stringified JWK.
-* format = hex: will produce a hex encoded DER string. (WIP)
-* format = raw: will produce a buffer containing DER bytes. (WIP)
-* format = uint8_array: will produce a uint8 array containing DER bytes. (WIP)
 * format = blk: will produce a hex encoded key string as used on various blockchains (limited to secp256k1 keys).
+
+**selector**:
 
 Selector can be any of these: 'public', 'private', 'public_pkcs1', 'public_pkcs8', 'private_pkcs1' or 'private_pkcs8'.
 
