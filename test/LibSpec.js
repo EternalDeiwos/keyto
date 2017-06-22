@@ -41,7 +41,8 @@ const {
       privatePKCS8: k256PrivatePKCS8,
       privatePKCS1: k256PrivatePKCS1,
       privateJwk: k256PrivateJwk,
-      privateHex: k256PrivateHex
+      privateHex: k256PrivateHex,
+      publicHex: k256PublicHex
     },
     P256: {
       publicPKCS8: p256PublicPKCS8,
@@ -256,6 +257,10 @@ describe('keyto', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
       })
 
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
+      })
+
       it('should not convert to privatePKCS1', () => {
         expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
       })
@@ -290,6 +295,50 @@ describe('keyto', () => {
 
       it('should convert to publicJwk', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
+      })
+
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
+      })
+
+      it('should not convert to privatePKCS1', () => {
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privatePKCS8', () => {
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privateJwk', () => {
+        expect(() => JSON.stringify(key.toJwk('private'), null, 2)).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privateHex', () => {
+        expect(() => key.toString('blk', 'private')).to.throw('Cannot export a private key from a public key')
+      })
+    })
+
+    describe('publicHex', () => {
+
+      let key
+      before(() => {
+        key = keyto.from(k256PublicHex, 'blk')
+      })
+
+      it('should convert to publicPKCS1', () => {
+        expect(() => key.toString('pem', 'public_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(k256PublicPKCS8)
+      })
+
+      it('should convert to publicJwk', () => {
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
+      })
+
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
       })
 
       it('should not convert to privatePKCS1', () => {
@@ -328,6 +377,10 @@ describe('keyto', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
       })
 
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
+      })
+
       it('should convert to privatePKCS1', () => {
         key.toString('pem', 'private_pkcs1').should.equal(k256PrivatePKCS1)
       })
@@ -362,6 +415,10 @@ describe('keyto', () => {
 
       it('should convert to publicJwk', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
+      })
+
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
       })
 
       it('should convert to privatePKCS1', () => {
@@ -400,6 +457,10 @@ describe('keyto', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
       })
 
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
+      })
+
       it('should convert to privatePKCS1', () => {
         key.toString('pem', 'private_pkcs1').should.equal(k256PrivatePKCS1)
       })
@@ -434,6 +495,10 @@ describe('keyto', () => {
 
       it('should convert to publicJwk', () => {
         JSON.stringify(key.toJwk('public'), null, 2).should.equal(k256PublicJwk)
+      })
+
+      it('should convert to publicHex', () => {
+        key.toString('blk', 'public').should.equal(k256PublicHex)
       })
 
       it('should convert to privatePKCS1', () => {
