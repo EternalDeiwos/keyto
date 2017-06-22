@@ -288,7 +288,7 @@ class Key {
 
     // BLK
     if (format === 'blk') {
-      return new Key(key, { kty: 'EC', crv: 'K-256', format, selector: 'private' })
+      return new Key(key, { kty: 'EC', crv: 'K-256', format, selector: key.length > 64 ? 'public' : 'private' })
     }
 
     throw new InvalidOperationError(`Invalid format ${format}`)
@@ -352,7 +352,13 @@ class Key {
 
     // BLK
     if (format === 'blk') {
-      return alg.fromBlk(key)
+      switch (selector) {
+        case 'public':
+          return alg.fromPublicBlk(key)
+
+        case 'private':
+          return alg.fromPrivateBlk(key)
+      }
     }
   }
 
@@ -447,10 +453,10 @@ class Key {
           if (type.includes('public')) {
             throw new InvalidOperationError('Cannot export a private key from a public key')
           }
-          return alg.toBlk(key)
+          return alg.toPrivateBlk(key)
 
         case 'public':
-          throw new OperationNotSupportedError()
+          return alg.toPublicBlk(key)
 
         default:
           throw new Error('Invalid key selector')
