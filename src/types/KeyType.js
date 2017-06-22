@@ -47,11 +47,15 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
-  fromJwk (key) {
+  fromPrivateBlk (key) {
     throw new OperationNotSupportedError()
   }
 
-  fromBlk (key) {
+  fromPublicBlk (key) {
+    throw new OperationNotSupportedError()
+  }
+
+  fromJwk (key) {
     throw new OperationNotSupportedError()
   }
 
@@ -76,15 +80,19 @@ class KeyType {
     throw new OperationNotSupportedError()
   }
 
+  toPrivateBlk (key) {
+    throw new OperationNotSupportedError()
+  }
+
+  toPublicBlk (key) {
+    throw new OperationNotSupportedError()
+  }
+
   toPrivateJwk (key) {
     throw new OperationNotSupportedError()
   }
 
   toPublicJwk (key) {
-    throw new OperationNotSupportedError()
-  }
-
-  toBlk (key) {
     throw new OperationNotSupportedError()
   }
 
