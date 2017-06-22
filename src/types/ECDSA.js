@@ -38,7 +38,8 @@ class ECDSA extends KeyType {
 
     let data = ECPrivateKey.decode(key, 'der')
     let { privateKey: d, publicKey: { data: publicKey } } = data
-    let { x, y } = ECDSA.getPoint(publicKey)
+    let hexPoint = Converter.convert(publicKey, 'raw', 'hex')
+    let { x, y } = ECDSA.getPoint(hexPoint)
 
     return { d, x, y }
   }
@@ -51,7 +52,8 @@ class ECDSA extends KeyType {
     let data = ECPrivateKey.decode(info.privateKey, 'der')
 
     let { privateKey: d, publicKey: { data: publicKey } } = data
-    let { x, y } = ECDSA.getPoint(publicKey)
+    let hexPoint = Converter.convert(publicKey, 'raw', 'hex')
+    let { x, y } = ECDSA.getPoint(hexPoint)
 
     return { d, x, y }
   }
@@ -60,7 +62,23 @@ class ECDSA extends KeyType {
     let PublicKeyInfo = asn.normalize('PublicKeyInfo')
 
     let info = PublicKeyInfo.decode(key, 'der')
-    return ECDSA.getPoint(info.publicKey.data)
+    let hexPoint = Converter.convert(info.publicKey.data, 'raw', 'hex')
+    return ECDSA.getPoint(hexPoint)
+  }
+
+  fromPrivateBlk (key) {
+    let privateKey = ec.keyFromPrivate(key, 'hex')
+    let publicKey = privateKey.getPublic()
+
+    return {
+      d: Converter.convert(privateKey.priv, 'bn', 'raw'),
+      x: Converter.convert(publicKey.getX(), 'bn', 'raw'),
+      y: Converter.convert(publicKey.getY(), 'bn', 'raw'),
+    }
+  }
+
+  fromPublicBlk (key) {
+    return ECDSA.getPoint(key)
   }
 
   fromJwk (key) {
@@ -70,17 +88,6 @@ class ECDSA extends KeyType {
       d: Converter.convert(d, 'base64url', 'raw'),
       x: Converter.convert(x, 'base64url', 'raw'),
       y: Converter.convert(y, 'base64url', 'raw'),
-    }
-  }
-
-  fromBlk (key) {
-    let privateKey = ec.keyFromPrivate(key, 'hex')
-    let publicKey = privateKey.getPublic()
-
-    return {
-      d: Converter.convert(privateKey.priv, 'bn', 'raw'),
-      x: Converter.convert(publicKey.getX(), 'bn', 'raw'),
-      y: Converter.convert(publicKey.getY(), 'bn', 'raw'),
     }
   }
 
@@ -159,6 +166,14 @@ class ECDSA extends KeyType {
     return ECDSA.formatPem(base64pem, 'PUBLIC')
   }
 
+  toPrivateBlk (key) {
+    return key.d.toString('hex')
+  }
+
+  toPublicBlk (key) {
+    return Converter.convert(ECDSA.makePoint(key.x, key.y), 'raw', 'hex')
+  }
+
   toPrivateJwk (key) {
     let { crv, kty } = this.params
     let { d, x, y } = key
@@ -184,19 +199,14 @@ class ECDSA extends KeyType {
     }
   }
 
-  toBlk (key) {
-    return key.d.toString('hex')
-  }
-
   /**
    * HELPERS
    * @ignore
    */
 
   static getPoint (point) {
-    let hexstr = Converter.convert(point, 'raw', 'hex')
-    let x = hexstr.slice(2, ((hexstr.length - 2) / 2) + 2)
-    let y = hexstr.slice(((hexstr.length - 2) / 2) + 2)
+    let x = point.slice(2, ((point.length - 2) / 2) + 2)
+    let y = point.slice(((point.length - 2) / 2) + 2)
     return {
       x: Converter.convert(x, 'hex', 'raw'),
       y: Converter.convert(y, 'hex', 'raw'),
