@@ -58,12 +58,12 @@ const {
       privatePKCS1: p384PrivatePKCS1,
       privateJwk: p384PrivateJwk,
     },
-    P512: {
-      publicPKCS8: p512PublicPKCS8,
-      publicJwk: p512PublicJwk,
-      privatePKCS8: p512PrivatePKCS8,
-      privatePKCS1: p512PrivatePKCS1,
-      privateJwk: p512PrivateJwk,
+    P521: {
+      publicPKCS8: p521PublicPKCS8,
+      publicJwk: p521PublicJwk,
+      privatePKCS8: p521PrivatePKCS8,
+      privatePKCS1: p521PrivatePKCS1,
+      privateJwk: p521PrivateJwk,
     },
   }
 } = require(path.join(cwd, 'test', 'keys'))
@@ -851,7 +851,7 @@ describe('keyto', () => {
 
       let key
       before(() => {
-        key = keyto.from(p512PublicPKCS8, 'pem')
+        key = keyto.from(p521PublicPKCS8, 'pem')
       })
 
       it('should convert to publicPKCS1', () => {
@@ -859,11 +859,11 @@ describe('keyto', () => {
       })
 
       it('should convert to publicPKCS8', () => {
-        key.toString('pem', 'public_pkcs8').should.equal(p512PublicPKCS8)
+        key.toString('pem', 'public_pkcs8').should.equal(p521PublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
-        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p512PublicJwk)
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p521PublicJwk)
       })
 
       it('should not convert to privatePKCS1', () => {
@@ -883,7 +883,7 @@ describe('keyto', () => {
 
       let key
       before(() => {
-        key = keyto.from(p512PublicJwk, 'jwk')
+        key = keyto.from(p521PublicJwk, 'jwk')
       })
 
       it('should convert to publicPKCS1', () => {
@@ -891,11 +891,11 @@ describe('keyto', () => {
       })
 
       it('should convert to publicPKCS8', () => {
-        key.toString('pem', 'public_pkcs8').should.equal(p512PublicPKCS8)
+        key.toString('pem', 'public_pkcs8').should.equal(p521PublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
-        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p512PublicJwk)
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p521PublicJwk)
       })
 
       it('should not convert to privatePKCS1', () => {
@@ -915,7 +915,7 @@ describe('keyto', () => {
 
       let key
       before(() => {
-        key = keyto.from(p512PrivatePKCS1, 'pem')
+        key = keyto.from(p521PrivatePKCS1, 'pem')
       })
 
       it('should convert to publicPKCS1', () => {
@@ -923,23 +923,23 @@ describe('keyto', () => {
       })
 
       it('should convert to publicPKCS8', () => {
-        key.toString('pem', 'public_pkcs8').should.equal(p512PublicPKCS8)
+        key.toString('pem', 'public_pkcs8').should.equal(p521PublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
-        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p512PublicJwk)
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p521PublicJwk)
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private_pkcs1').should.equal(p512PrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(p521PrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'private_pkcs8').should.equal(p512PrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(p521PrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
-        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p512PrivateJwk)
+        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p521PrivateJwk)
       })
     })
 
@@ -947,7 +947,7 @@ describe('keyto', () => {
 
       let key
       before(() => {
-        key = keyto.from(p512PrivatePKCS8, 'pem')
+        key = keyto.from(p521PrivatePKCS8, 'pem')
       })
 
       it('should convert to publicPKCS1', () => {
@@ -955,23 +955,23 @@ describe('keyto', () => {
       })
 
       it('should convert to publicPKCS8', () => {
-        key.toString('pem', 'public_pkcs8').should.equal(p512PublicPKCS8)
+        key.toString('pem', 'public_pkcs8').should.equal(p521PublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
-        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p512PublicJwk)
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p521PublicJwk)
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private_pkcs1').should.equal(p512PrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(p521PrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'private_pkcs8').should.equal(p512PrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(p521PrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
-        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p512PrivateJwk)
+        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p521PrivateJwk)
       })
     })
 
@@ -979,7 +979,7 @@ describe('keyto', () => {
 
       let key
       before(() => {
-        key = keyto.from(p512PrivateJwk, 'jwk')
+        key = keyto.from(p521PrivateJwk, 'jwk')
       })
 
       it('should convert to publicPKCS1', () => {
@@ -987,23 +987,23 @@ describe('keyto', () => {
       })
 
       it('should convert to publicPKCS8', () => {
-        key.toString('pem', 'public_pkcs8').should.equal(p512PublicPKCS8)
+        key.toString('pem', 'public_pkcs8').should.equal(p521PublicPKCS8)
       })
 
       it('should convert to publicJwk', () => {
-        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p512PublicJwk)
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(p521PublicJwk)
       })
 
       it('should convert to privatePKCS1', () => {
-        key.toString('pem', 'private_pkcs1').should.equal(p512PrivatePKCS1)
+        key.toString('pem', 'private_pkcs1').should.equal(p521PrivatePKCS1)
       })
 
       it('should convert to privatePKCS8', () => {
-        key.toString('pem', 'private_pkcs8').should.equal(p512PrivatePKCS8)
+        key.toString('pem', 'private_pkcs8').should.equal(p521PrivatePKCS8)
       })
 
       it('should convert to privateJwk', () => {
-        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p512PrivateJwk)
+        JSON.stringify(key.toJwk('private'), null, 2).should.equal(p521PrivateJwk)
       })
     })
   })
