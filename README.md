@@ -1,18 +1,30 @@
-# Keyto
+# trust-keyto
 
-A utility for translating cryptographic keys between representations.
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Build Status](https://travis-ci.org/EternalDeiwos/keyto.svg?branch=master)](https://travis-ci.org/EternalDeiwos/keyto)
+[![codecov](https://codecov.io/gh/EternalDeiwos/keyto/branch/master/graph/badge.svg)](https://codecov.io/gh/EternalDeiwos/keyto)
+
+> A utility for translating cryptographic keys between representations.
 
 Keyto is pronounced 'key-to'.
 
-### Documentation
+Full project documentation is available [here](https://eternaldeiwos.github.io/keyto).
 
-Project documentation is available [here](https://eternaldeiwos.github.io/keyto).
+## Table of Contents
+
+- [Status](#status)
+- [Install](#install)
+- [Usage](#usage)
+- [API](#api)
+- [Maintainers](#maintainers)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Status
 
 ### SemVer Notice
 
 This library is currently experimental. Until v1.0.0 is released, breaking changes will only incur a minor version increment.
-
-## Status
 
 ### RSA
 
@@ -51,6 +63,12 @@ This library is currently experimental. Until v1.0.0 is released, breaking chang
 - [ ] PKCS8
 - [ ] JWK
 - [ ] BLK
+
+## Install
+
+```bash
+$ npm install @trust/keyto --save
+```
 
 ## Usage
 
@@ -138,3 +156,18 @@ Selector can be any of these: 'public', 'private', 'public_pkcs1', 'public_pkcs8
 * selector = private_pkcs1: will produce a private key according to the PKCS1 ASN Schema. Only relevant to DER related encodings.
 * selector = private_pkcs8: will produce a private key according to the PKCS8 ASN Schema. Only relevant to DER related encodings.
 
+
+## Maintainers
+
+[@EternalDeiwos](https://github.com/EternalDeiwos)
+[@thelunararmy](https://github.com/thelunararmy)
+
+## Contribute
+
+PRs accepted.
+
+Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
+## License
+
+MIT © 2017-2018 Greg Linklater
