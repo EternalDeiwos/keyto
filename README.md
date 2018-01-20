@@ -91,7 +91,7 @@ assertEqual(jwk, key)
 Translate Private Hex (Blockchain) Key to PKCS8 Public PEM:
 
 ```js
-const keyto = require('@eternaldeiwos/keyto')
+const keyto = require('@trust/keyto')
 
 let blk = getPrivateBlockchainHexStringSomehow()
 let pemPublic = getPublicPemSomehow()
