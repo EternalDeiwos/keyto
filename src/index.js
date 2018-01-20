@@ -129,7 +129,7 @@ class Key {
    * Import a key
    *
    * @example <caption>Decode PEM and convert to JWK</caption>
-   * const keyto = require('@eternaldeiwos/keyto')
+   * const keyto = require('@trust/keyto')
    *
    * let pemPrivate = getPrivatePemStringSomehow()
    * let jwk = getPublicJwkSomehow()
@@ -142,7 +142,7 @@ class Key {
    * assertEqual(jwk, key)
    *
    * @example <caption>Decode HEX (Blockchain) private key and convert to PEM PKCS8 public key</caption>
-   * const keyto = require('@eternaldeiwos/keyto')
+   * const keyto = require('@trust/keyto')
    *
    * let blk = getPrivateBlockchainHexStringSomehow()
    * let pemPublic = getPublicPemSomehow()
