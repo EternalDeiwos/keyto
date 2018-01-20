@@ -39,7 +39,7 @@ This library is currently experimental. Until v1.0.0 is released, breaking chang
 - [x] PKCS8
 - [x] JWK
 
-### ECDSA - secp521r1 (P-512)
+### ECDSA - secp521r1 (P-521)
 
 - [x] PKCS1 (Private Only)
 - [x] PKCS8
