@@ -32,14 +32,14 @@ solzw04b+WnVzB985+o=
  */
 const privateJwk = `{
   "kty": "EC",
-  "crv": "P-512",
+  "crv": "P-521",
   "d": "Aae3gDHukB0OAL-LRH3lWBUFJ951hxRRAH8qjnI0lB8zxZjUKR9pDMBaWbulz8WrgU1U5xVvEALQ9aL9S-le2h6W",
   "x": "AUfN5-iTkxajWZGoNe-jzNCpSydvol5MrKf-QPS0k_3ZxgW62YdOrespAXYrK--G_ff2IoGrXWOw2kuM0JWiioOn",
   "y": "AQc6m4W2GVAfWKxf3qhCtKj6nGCQxCNTHF54AX-Yh4g271LYf8VgW8bshT877SJOJjkYabKJc8NOG_lp1cwffOfq"
 }`
 const publicJwk = `{
   "kty": "EC",
-  "crv": "P-512",
+  "crv": "P-521",
   "x": "AUfN5-iTkxajWZGoNe-jzNCpSydvol5MrKf-QPS0k_3ZxgW62YdOrespAXYrK--G_ff2IoGrXWOw2kuM0JWiioOn",
   "y": "AQc6m4W2GVAfWKxf3qhCtKj6nGCQxCNTHF54AX-Yh4g271LYf8VgW8bshT877SJOJjkYabKJc8NOG_lp1cwffOfq"
 }`
