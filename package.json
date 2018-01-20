@@ -4,8 +4,9 @@
   "description": "A utility for translating cryptographic keys between representations",
   "main": "src/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -w",
-    "jsdoc": "./node_modules/.bin/jsdoc -c jsdoc.json -r"
+    "test": "nyc _mocha test",
+    "jsdoc": "jsdoc -c jsdoc.json -r",
+    "coverage": "nyc --reporter=lcov _mocha test"
   },
   "repository": {
     "type": "git",
@@ -34,9 +35,11 @@
   "homepage": "https://github.com/EternalDeiwos/keyto#readme",
   "devDependencies": {
     "chai": "^4.0.2",
+    "codecov": "^3.0.0",
     "glob": "^7.1.2",
     "jsdoc": "^3.4.3",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "nyc": "^11.4.1"
   },
   "dependencies": {
     "asn1.js": "^4.9.1",
