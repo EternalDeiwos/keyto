@@ -1,4 +1,4 @@
-# trust-keyto
+# Keyto _(@trust/keyto)_
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Build Status](https://travis-ci.org/EternalDeiwos/keyto.svg?branch=master)](https://travis-ci.org/EternalDeiwos/keyto)
