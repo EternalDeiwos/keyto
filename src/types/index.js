@@ -56,7 +56,7 @@ supportedKeyTypes.define([
   },
   {
     kty: 'EC',
-    crv: 'P-512',
+    crv: 'P-521',
     oid: '1.2.840.10045.2.1',
     namedCurve: '1.3.132.0.35',
     algParameters: '06052b81040023',
