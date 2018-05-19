@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "asn1.js": "^4.9.1",
-    "base64url": "^2.0.0",
+    "base64url": "^3.0.0",
     "elliptic": "^6.4.0"
   }
 }
