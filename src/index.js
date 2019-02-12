@@ -13,6 +13,7 @@ const InvalidOperationError = require('./InvalidOperationError')
 const OperationNotSupportedError = require('./OperationNotSupportedError')
 const types = require('./types')
 const asn = require('./asn1')
+const EOL = require('os').EOL;
 
 /**
  * JWK
@@ -215,7 +216,7 @@ class Key {
       }
 
       // Extract Base64 String
-      let lines = key.split('\n')
+      let lines = key.split(EOL)
       let header = lines.splice(0, 1)
       lines.splice(lines.length-1, 1)
       let base64pem = lines.join('')
