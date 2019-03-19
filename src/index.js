@@ -13,7 +13,7 @@ const InvalidOperationError = require('./InvalidOperationError')
 const OperationNotSupportedError = require('./OperationNotSupportedError')
 const types = require('./types')
 const asn = require('./asn1')
-const EOL = require('os').EOL;
+const EOL = RegExp('\r?\n', 'g');
 
 /**
  * JWK
