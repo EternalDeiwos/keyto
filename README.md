@@ -22,10 +22,6 @@ Full project documentation is available [here](https://eternaldeiwos.github.io/k
 
 ## Status
 
-### SemVer Notice
-
-This library is currently experimental. Until v1.0.0 is released, breaking changes will only incur a minor version increment.
-
 ### RSA
 
 - [x] PKCS1
