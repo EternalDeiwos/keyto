@@ -218,7 +218,7 @@ class Key {
       // Extract Base64 String
       let lines = key.split(EOL)
       let header = lines.splice(0, 1)
-      lines.splice(lines.length-1, 1)
+      lines.splice(lines.length - 1, 1)
       let base64pem = lines.join('')
 
       // Extract metadata from header
@@ -247,15 +247,21 @@ class Key {
 
         let { algorithm: { algorithm, parameters } } = decoded
         algorithm = algorithm.join('.')
-        parameters = parameters.toString('hex')
-        kty = types.find(param => param.oid === algorithm).kty
+
+        // parameters are optional
+        parameters = parameters ? parameters.toString('hex') : undefined
+
+        // kty might not exist
+        const type = types.find(param => param.oid === algorithm)
+        kty = type ? type.kty : undefined
 
         if (!kty) {
-          throw new OperationNotSupportedError()
+          throw new OperationNotSupportedError(algorithm)
         }
 
-        if (kty === 'RSA') {
+        if (kty === 'RSA' || kty === 'OKP') {
           oid = algorithm
+
         } else if (kty === 'EC') {
           crv = types.find(param => param.algParameters === parameters).crv
         }
@@ -311,6 +317,10 @@ class Key {
         Object.defineProperty(this, 'algorithm', { value: types.normalize(kty, 'oid', oid) })
       } else {
         throw new Error('Both crv and oid are undefined')
+      }
+
+      if (!this.algorithm) {
+        throw new Error(`${this.crv || this.oid} is not implemented yet`)
       }
     }
 
@@ -403,7 +413,7 @@ class Key {
    * @param  {(KeySelector|PEMKeySelector)} [selector=public_pkcs8]
    * @return {String}
    */
-  toString(format = 'pem', selector = 'public_pkcs8') {
+  toString (format = 'pem', selector = 'public_pkcs8') {
     let { key, alg, selector: type } = this
 
     // PEM
