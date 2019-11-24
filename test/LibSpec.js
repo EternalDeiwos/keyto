@@ -1015,7 +1015,6 @@ describe('keyto', () => {
       })
     })
   })
-})
 
   describe('EdDSA ed25519', () => {
 
