@@ -59,10 +59,13 @@ This library is currently experimental. Until v1.0.0 is released, breaking chang
 
 ### EDDSA - ed25519
 
-- [ ] PKCS1
+- [x] PKCS8
+- [x] JWK
+
+### EDDSA - ed448
+
 - [ ] PKCS8
 - [ ] JWK
-- [ ] BLK
 
 ## Install
 
