@@ -73,6 +73,12 @@ const {
       privatePKCS8: ed25519PrivatePKCS8,
       privateJwk: ed25519PrivateJwk,
     },
+    ed448: {
+      publicPKCS8: ed448PublicPKCS8,
+      publicJwk: ed448PublicJwk,
+      privatePKCS8: ed448PrivatePKCS8,
+      privateJwk: ed448PrivateJwk,
+    },
   },
 } = require(path.join(cwd, 'test', 'keys'))
 
@@ -1012,6 +1018,137 @@ describe('keyto', () => {
 
       it('should convert to privateJwk', () => {
         JSON.stringify(key.toJwk('private'), null, 2).should.equal(p521PrivateJwk)
+      })
+    })
+  })
+
+  describe.skip('EdDSA ed448', () => {
+
+    describe('publicPKCS8', () => {
+
+      let key
+      before(() => {
+        key = keyto.from(ed448PublicPKCS8, 'pem')
+      })
+
+      it('should not support publicPKCS1', () => {
+        expect(() => key.toString('pem', 'public_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ed448PublicPKCS8)
+      })
+
+      it('should convert to publicJwk', () => {
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(ed448PublicJwk)
+      })
+
+      it('should not convert to privatePKCS1', () => {
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privatePKCS8', () => {
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privateJwk', () => {
+        expect(() => JSON.stringify(key.toJwk('private'), null, 2)).to.throw('Cannot export a private key from a public key')
+      })
+    })
+
+    describe('publicJwk', () => {
+
+      let key
+      before(() => {
+        key = keyto.from(ed448PublicJwk, 'jwk')
+      })
+
+      it('should not support publicPKCS1', () => {
+        expect(() => key.toString('pem', 'public_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ed448PublicPKCS8)
+      })
+
+      it('should convert to publicJwk', () => {
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(ed448PublicJwk)
+      })
+
+      it('should not convert to privatePKCS1', () => {
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privatePKCS8', () => {
+        expect(() => key.toString('pem', 'private_pkcs8')).to.throw('Cannot export a private key from a public key')
+      })
+
+      it('should not convert to privateJwk', () => {
+        expect(() => JSON.stringify(key.toJwk('private'), null, 2)).to.throw('Cannot export a private key from a public key')
+      })
+    })
+
+    describe('privatePKCS8', () => {
+
+      let key
+      before(() => {
+        key = keyto.from(ed448PrivatePKCS8, 'pem')
+      })
+
+      it('should not support publicPKCS1', () => {
+        expect(() => key.toString('pem', 'public_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ed448PublicPKCS8)
+      })
+
+      it('should convert to publicJwk', () => {
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(ed448PublicJwk)
+      })
+
+      it('should not support privatePKCS1', () => {
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to privatePKCS8', () => {
+        key.toString('pem', 'private_pkcs8').should.equal(ed448PrivatePKCS8)
+      })
+
+      it('should convert to privateJwk', () => {
+        JSON.stringify(key.toJwk('private'), null, 2).should.equal(ed448PrivateJwk)
+      })
+    })
+
+    describe('privateJwk', () => {
+
+      let key
+      before(() => {
+        key = keyto.from(ed448PrivateJwk, 'jwk')
+      })
+
+      it('should not support publicPKCS1', () => {
+        expect(() => key.toString('pem', 'public_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to publicPKCS8', () => {
+        key.toString('pem', 'public_pkcs8').should.equal(ed448PublicPKCS8)
+      })
+
+      it('should convert to publicJwk', () => {
+        JSON.stringify(key.toJwk('public'), null, 2).should.equal(ed448PublicJwk)
+      })
+
+      it('should not support privatePKCS1', () => {
+        expect(() => key.toString('pem', 'private_pkcs1')).to.throw('This has not been implemented yet')
+      })
+
+      it('should convert to privatePKCS8', () => {
+        key.toString('pem', 'private_pkcs8').should.equal(ed448PrivatePKCS8)
+      })
+
+      it('should convert to privateJwk', () => {
+        JSON.stringify(key.toJwk('private'), null, 2).should.equal(ed448PrivateJwk)
       })
     })
   })
