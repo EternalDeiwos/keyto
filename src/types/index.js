@@ -73,6 +73,12 @@ supportedKeyTypes.define([
     oid: '1.3.101.112',
     infoVersion: 'two-prime',
   },
+  {
+    kty: 'OKP',
+    crv: 'Ed448',
+    oid: '1.3.101.113',
+    infoVersion: 'two-prime',
+  },
 ], EdDSA)
 
 /**
