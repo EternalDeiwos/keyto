@@ -129,6 +129,10 @@ class EdDSA extends KeyType {
         startBuffer = Buffer.from('0420', 'hex')
         break
 
+      case 'Ed448':
+        startBuffer = Buffer.from('0439', 'hex')
+        break
+
       default:
         throw new Error(`${this.params.crv} is an invalid curve for EdDSA`)
     }
@@ -145,6 +149,11 @@ class EdDSA extends KeyType {
         const Ed = require('elliptic').eddsa
         const ed = new Ed('ed25519')
         return Buffer.from(ed.keyFromSecret(d).getPublic())
+
+      case 'Ed448':
+        // 1. SHAKE256 of private key with hash_len=114 (912 bits)
+        // 2. Get lower 57 bytes
+        throw new Error('Not yet implemented')
 
       default:
         throw new Error(`${this.params.crv} is an invalid curve for EdDSA`)
