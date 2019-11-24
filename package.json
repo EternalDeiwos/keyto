@@ -42,8 +42,8 @@
     "nyc": "^14.1.1"
   },
   "dependencies": {
-    "asn1.js": "^5.0.1",
+    "asn1.js": "^5.2.0",
     "base64url": "^3.0.1",
-    "elliptic": "^6.4.1"
+    "elliptic": "^6.5.2"
   }
 }
