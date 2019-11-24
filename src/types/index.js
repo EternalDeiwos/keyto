@@ -7,7 +7,7 @@
 const SupportedKeyTypes = require('./SupportedKeyTypes')
 const RSA = require('./RSA')
 const ECDSA = require('./ECDSA')
-const EDDSA = require('./EDDSA')
+const EdDSA = require('./EdDSA')
 
 /**
  * supportedKeyTypes
@@ -65,9 +65,15 @@ supportedKeyTypes.define([
   },
 ], ECDSA)
 
-// EDDSA
+// EdDSA
 supportedKeyTypes.define([
-], EDDSA)
+  {
+    kty: 'OKP',
+    crv: 'Ed25519',
+    oid: '1.3.101.112',
+    infoVersion: 'two-prime',
+  },
+], EdDSA)
 
 /**
  * Export
