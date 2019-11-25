@@ -256,7 +256,7 @@ class Key {
         kty = type ? type.kty : undefined
 
         if (!kty) {
-          throw new OperationNotSupportedError(algorithm)
+          throw new InvalidOperationError(`${algorithm} is not supported`)
         }
 
         if (kty === 'RSA' || kty === 'OKP') {
@@ -266,8 +266,7 @@ class Key {
           crv = types.find(param => param.algParameters === parameters).crv
         }
 
-      // PKCS1
-      } else {
+      } else { // PKCS1
 
         if (kty === 'RSA') {
           selector = selector === 'PRIVATE' ? 'private_pkcs1' : 'public_pkcs1'
@@ -441,8 +440,7 @@ class Key {
           throw new Error('Invalid key selector')
       }
 
-    // JWK
-    } else if (format === 'jwk') {
+    } else if (format === 'jwk') { // JWK
       switch (selector) {
         case 'public':
           return JSON.stringify(alg.toPublicJwk(key))
@@ -457,8 +455,7 @@ class Key {
           throw new Error('Invalid key selector')
       }
 
-    // BLK
-    } else if (format === 'blk') {
+    } else if (format === 'blk') { // BLK
       switch (selector) {
         case 'private':
           if (type.includes('public')) {
