@@ -18,8 +18,8 @@ class OperationNotSupportedError extends Error {
    *
    * @return {OperationNotSupportedError}
    */
-  constructor (description) {
-    super(`${description ? description : 'This'} has not been implemented yet`)
+  constructor() {
+    super(`This has not been implemented yet`)
   }
 }
 
