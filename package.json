@@ -1,6 +1,6 @@
 {
   "name": "@trust/keyto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A utility for translating cryptographic keys between representations",
   "main": "src/index.js",
   "scripts": {
