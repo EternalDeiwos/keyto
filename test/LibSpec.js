@@ -35,7 +35,7 @@ const {
     }
   },
   ECDSA: {
-    K256: {
+    secp256k1: {
       publicPKCS8: k256PublicPKCS8,
       publicJwk: k256PublicJwk,
       privatePKCS8: k256PrivatePKCS8,

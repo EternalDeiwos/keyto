@@ -294,7 +294,7 @@ class Key {
 
     // BLK
     if (format === 'blk') {
-      return new Key(key, { kty: 'EC', crv: 'K-256', format, selector: key.length > 64 ? 'public' : 'private' })
+      return new Key(key, { kty: 'EC', crv: 'secp256k1', format, selector: key.length > 64 ? 'public' : 'private' })
     }
 
     throw new InvalidOperationError(`Invalid format ${format}`)

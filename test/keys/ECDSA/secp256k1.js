@@ -33,14 +33,14 @@ const publicHex = `04d44b4ca6aa608a9484d5a39fb348188ffb12bfce950dbb81b91fd53e9af
  */
 const privateJwk = `{
   "kty": "EC",
-  "crv": "K-256",
+  "crv": "secp256k1",
   "d": "Yv7my6fkdxQDfwFCsiap7Wt_zBbjlKNJ0rw5QL3SRG0",
   "x": "1EtMpqpgipSE1aOfs0gYj_sSv86VDbuBuR_VPpr2F6Y",
   "y": "V6qmRIVQhIWp51vuuJV5ypUdHOvb9wPgzo5heUfRVOc"
 }`
 const publicJwk = `{
   "kty": "EC",
-  "crv": "K-256",
+  "crv": "secp256k1",
   "x": "1EtMpqpgipSE1aOfs0gYj_sSv86VDbuBuR_VPpr2F6Y",
   "y": "V6qmRIVQhIWp51vuuJV5ypUdHOvb9wPgzo5heUfRVOc"
 }`

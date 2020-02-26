@@ -29,7 +29,7 @@ supportedKeyTypes.define([
 supportedKeyTypes.define([
   {
     kty: 'EC',
-    crv: 'K-256',
+    crv: 'secp256k1',
     oid: '1.2.840.10045.2.1',
     namedCurve: '1.3.132.0.10',
     algParameters: '06052b8104000a',
